@@ -1,0 +1,12 @@
+# macOS
+.DS_Store
+
+# Python
+*.pyc
+__pycache__/
+
+# Build / static noise
+kokokara.md
+
+# Vercel
+vercel.json
