@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h1>ログイン</h1>
+
+<form method="post">
+  {% csrf_token %}
+  {{ form.as_p }}
+
+  <button type="submit" class="btn btn-primary">
+    ログイン
+  </button>
+</form>
+
+<p>
+  アカウントをお持ちでない方は
+  <a href="{% url 'myapp:signup' %}">新規登録</a>
+</p>
+{% endblock %}
