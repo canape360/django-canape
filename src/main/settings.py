@@ -1,21 +1,41 @@
 from pathlib import Path
-import dj_database_url
 import os
+import dj_database_url
+from dotenv import load_dotenv  # python-dotenv が必要
 
 # ========================
-# BASE_DIR 修正（最重要）
-# src/main/settings.py → BASE_DIR = src/
+# .env を読み込む
+# ========================
+load_dotenv()  # プロジェクトルートの .env を読み込み
+
+# ========================
+# BASE_DIR
+# src/main/settings.py から src/ を基準にする
 # ========================
 BASE_DIR = Path(__file__).resolve().parent.parent.parent
 
-SECRET_KEY = os.environ.get("SECRET_KEY", "local-secret-key")
+# ========================
+# Secret & Debug
+# ========================
+SECRET_KEY = os.environ.get("SECRET_KEY", "fallback-secret-key")
 DEBUG = os.environ.get("DEBUG", "False") == "True"
 
-ALLOWED_HOSTS = ["*"]
+# ========================
+# Allowed Hosts
+# ========================
+ALLOWED_HOSTS = os.environ.get(
+    "ALLOWED_HOSTS", "localhost,127.0.0.1"
+).split(",")
 
-LOGIN_URL = '/login/'
-LOGIN_REDIRECT_URL = 'person_list'
+# ========================
+# Login URLs
+# ========================
+LOGIN_URL = '/accounts/login/'
+LOGIN_REDIRECT_URL = 'myapp:person_list'
 
+# ========================
+# Installed Apps
+# ========================
 INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
@@ -26,9 +46,12 @@ INSTALLED_APPS = [
     'myapp',
 ]
 
+# ========================
+# Middleware
+# ========================
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
-    'whitenoise.middleware.WhiteNoiseMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',  # 静的ファイル配信用
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -39,6 +62,9 @@ MIDDLEWARE = [
 
 ROOT_URLCONF = 'main.urls'
 
+# ========================
+# Templates
+# ========================
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
@@ -57,23 +83,26 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'main.wsgi.application'
 
-
 # ========================
 # Database
-# Vercel：PostgreSQL（dj_database_url）
-# ローカル：SQLite
 # ========================
-DATABASES = {
-    'default': dj_database_url.config(
-        default='sqlite:///' + str(BASE_DIR / 'db.sqlite3'),
-        conn_max_age=600,
-        ssl_require=not os.environ.get('DEBUG', 'True') == 'True'
-    )
-}
+default_db_url = os.environ.get("DATABASE_URL", f"sqlite:///{BASE_DIR / 'db.sqlite3'}")
 
+if default_db_url.startswith("sqlite"):
+    DATABASES = {
+        "default": dj_database_url.parse(default_db_url)
+    }
+else:
+    DATABASES = {
+        "default": dj_database_url.config(
+            default=default_db_url,
+            conn_max_age=600,
+            ssl_require=True
+        )
+    }
 
 # ========================
-# Password Validation
+# Password validation
 # ========================
 AUTH_PASSWORD_VALIDATORS = [
     {'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator'},
@@ -82,32 +111,29 @@ AUTH_PASSWORD_VALIDATORS = [
     {'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator'},
 ]
 
+# ========================
+# Internationalization
+# ========================
 LANGUAGE_CODE = 'ja'
 TIME_ZONE = 'Asia/Tokyo'
 USE_I18N = True
 USE_TZ = True
 
-
 # ========================
 # Static files
 # ========================
 STATIC_URL = '/static/'
-
-# ローカル静的ファイル
-STATICFILES_DIRS = [
-    BASE_DIR / "static",
-]
-
-# 本番（Vercel）静的ファイル収集先
-STATIC_ROOT = BASE_DIR / "staticfiles"
-
+STATICFILES_DIRS = [BASE_DIR / "static"]  # 開発用
+STATIC_ROOT = BASE_DIR / "staticfiles"    # collectstatic 先
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
-
 # ========================
-# Media
+# Media files
 # ========================
 MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'
 
+# ========================
+# Default primary key
+# ========================
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'

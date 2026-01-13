@@ -1,45 +1,28 @@
-"""
-URL configuration for main project.
-
-The `urlpatterns` list routes URLs to views. For more information please see:
-    https://docs.djangoproject.com/en/4.2/topics/http/urls/
-Examples:
-Function views
-    1. Add an import:  from my_app import views
-    2. Add a URL to urlpatterns:  path('', views.home, name='home')
-Class-based views
-    1. Add an import:  from other_app.views import Home
-    2. Add a URL to urlpatterns:  path('', Home.as_view(), name='home')
-Including another URLconf
-    1. Import the include() function: from django.urls import include, path
-    2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
-"""
 from django.contrib import admin
 from django.urls import path, include
-from myapp.views import IndexView  # IndexView をインポート
-from myapp.views import AboutView  # AboutView をインポート
 from django.conf import settings
 from django.conf.urls.static import static
 
+from myapp.views import IndexView, AboutView, signup_view
+
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('', IndexView.as_view(), name='index'),  # トップレベルのURLパターンを設定
+
+    # トップページ
+    path('', IndexView.as_view(), name='index'),
+
+    # ✅ 一般ユーザー登録
+    path('accounts/signup/', signup_view, name='signup'),
+
+    # Django標準 認証（login / logout / password）
+    path('accounts/', include('django.contrib.auth.urls')),
+
+    # myapp（業務・一般ユーザー）
     path('myapp/', include('myapp.urls')),
+
+    # About
     path('about/', AboutView.as_view(), name='about'),
 ]
-# 開発環境で静的ファイルを提供
+
 if settings.DEBUG:
     urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
-
-# from django.contrib import admin
-# from django.urls import path, include
- 
-
-# urlpatterns = [
-#     path('admin/', admin.site.urls),
-#     path('myapp/', include('myapp.urls')),  
-# ]
-# # main/urls.py
-
-
-

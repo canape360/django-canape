@@ -1,13 +1,23 @@
 from django.db import models
+from django.conf import settings
 
 class MyApp(models.Model):
     title = models.CharField(max_length=100)
     content = models.CharField(max_length=1000)
-    timestamp = models.DateTimeField(auto_now_add=True)
+    author = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        verbose_name='作成者'
+    )
+    created_at = models.DateTimeField(auto_now_add=True, verbose_name='作成日')
 
     def __str__(self):
-        
-        return f"{self.title} - {self.content}"  
+        # 一覧ではタイトルのみ表示
+        return self.title
+
+  
     # 表題の表示　 この場合titleとcontentが表示される
 
     # def __str__(self): #add code

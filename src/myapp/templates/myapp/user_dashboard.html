@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block content %}
+<h1>ユーザーダッシュボード</h1>
+
+<p>
+  ようこそ、<strong>{{ user.username }}</strong> さん
+</p>
+
+<!-- ログアウト -->
+<form method="post" action="{% url 'logout' %}" style="margin-bottom: 20px;">
+  {% csrf_token %}
+  <button type="submit" class="btn btn-outline-danger">
+    ログアウト
+  </button>
+</form>
+
+<hr>
+
+<h2>あなたの日記一覧</h2>
+
+{% if object_list %}
+  <ul class="list-group">
+    {% for diary in object_list %}
+      <li class="list-group-item">
+        <strong>{{ diary.title }}</strong><br>
+        <small>{{ diary.created_at|date:"Y-m-d H:i" }}</small><br>
+        <a href="{% url 'myapp:detail' diary.id %}">詳細</a> |
+        <a href="{% url 'myapp:update' diary.id %}">編集</a> |
+        <a href="{% url 'myapp:delete' diary.id %}">削除</a>
+      </li>
+    {% endfor %}
+  </ul>
+{% else %}
+  <p>まだ日記がありません。</p>
+{% endif %}
+
+<hr>
+
+<a href="{% url 'myapp:form' %}" class="btn btn-primary">
+  新しい日記を書く
+</a>
+
+{% endblock %}
