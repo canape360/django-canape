@@ -1,11 +1,31 @@
 {% extends "base.html" %}
-{% block title %}Update My App Entry{% endblock %}
+
+{% block title %}日記を編集{% endblock %}
+
 {% block content %}
-<h1>Update My App Entry</h1>
-<form method="post">
-  {% csrf_token %}
-  {{ form.as_p }}
-  <button type="submit">Update</button>
-</form>
-<p><a href="{% url 'myapp-list' %}">Back to My Apps List</a></p>
+<div class="container mt-4">
+
+  <h1 class="mb-4">日記を編集</h1>
+
+  <form method="post">
+    {% csrf_token %}
+
+    <!-- フォーム本体 -->
+    <div class="mb-3">
+      {{ form.as_p }}
+    </div>
+
+    <!-- 操作ボタン -->
+    <div class="d-flex gap-2">
+      <button type="submit" class="btn btn-primary">
+        更新する
+      </button>
+
+      <a href="{% url 'myapp:list' %}" class="btn btn-secondary">
+        一覧へ戻る
+      </a>
+    </div>
+  </form>
+
+</div>
 {% endblock %}

@@ -1,17 +1,12 @@
-from django.contrib.auth.forms import UserCreationForm
-from django.contrib.auth import login
 from django.shortcuts import render, redirect, get_object_or_404
-from django.views.generic import TemplateView
+from django.views.generic import TemplateView, ListView
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
+from django.core.asgi import get_asgi_application
 
 from .models import MyApp, Person, MyMail
-from .forms import MyAppForm, MyMailForm, MyMailSearchForm
-from django.contrib.auth.decorators import login_required
-
-@login_required
-def user_dashboard(request):
-    return render(request, "myapp/user_dashboard.html")
+from .forms import MyAppForm, MyMailForm
+from .forms import MyMailSearchForm  # ← 検索専用フォーム
 
 
 # =========================
@@ -25,6 +20,14 @@ class AboutView(TemplateView):
     template_name = "about.html"
 
 
+def index(request):
+    return render(request, "index.html")
+
+
+def form_view(request):
+    return render(request, "myapp/form.html")
+
+
 def loggedin_view(request):
     return render(request, 'loggedin_template.html', {
         'message': 'ログインしました。ようこそ！',
@@ -36,10 +39,12 @@ def loggedin_view(request):
 # =========================
 @login_required
 def person_list(request):
-    persons = Person.objects.all()
-    return render(request, 'myapp/person_list.html', {
-        'persons': persons
-    })
+    data = Person.objects.all()
+    return render(request, 'person_list.html', {'data': data})
+
+
+class PersonListView(ListView):
+    model = Person
 
 
 # =========================
@@ -105,7 +110,6 @@ def myappDeleteView(request, pk):
 # =========================
 # MyMail
 # =========================
-@login_required
 def mymailCreateView(request):
     if request.method == "POST":
         form = MyMailForm(request.POST)
@@ -126,28 +130,29 @@ def mymail_list(request):
     objects = MyMail.objects.all()
 
     if search_form.is_valid():
-        search = search_form.cleaned_data.get('search')
-        if search:
-            objects = objects.filter(subject__icontains=search)
+        search_term = search_form.cleaned_data.get('search')
+        if search_term:
+            objects = objects.filter(subject__icontains=search_term)
 
     return render(request, 'myapp/mymail_list.html', {
         'object_list': objects,
         'search_form': search_form,
     })
 
-# =========================
-# User Signup（一般ユーザー登録）
-# =========================
-def signup_view(request):
-    if request.method == "POST":
-        form = UserCreationForm(request.POST)
-        if form.is_valid():
-            user = form.save()
-            login(request, user)  # 登録後に自動ログイン
-            return redirect("myapp:person_list")  # ログイン後ページ
-    else:
-        form = UserCreationForm()
 
-    return render(request, "registration/signup.html", {
-        "form": form
-    })
+# =========================
+# ASGI lifecycle
+# =========================
+from .my_custom_startup_handler import my_custom_startup_handler
+from .my_custom_shutdown_handler import my_custom_shutdown_handler
+
+django_asgi_app = get_asgi_application()
+
+async def application(scope, receive, send):
+    if scope['type'] == 'lifespan':
+        if scope['asgi']['type'] == 'startup':
+            await my_custom_startup_handler()
+        elif scope['asgi']['type'] == 'shutdown':
+            await my_custom_shutdown_handler()
+    else:
+        await django_asgi_app(scope, receive, send)

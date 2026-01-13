@@ -1,80 +1,61 @@
-
 from django import forms
-from .models import MyMail
-from django import forms
+from .models import MyApp, MyMail
 
 
+# =========================
+# MyApp 用フォーム（日記）
+# =========================
+class MyAppForm(forms.ModelForm):
+    class Meta:
+        model = MyApp
+        fields = ["title", "content"]  # ← __all__ は避ける
+        widgets = {
+            "title": forms.TextInput(attrs={
+                "class": "form-control",
+                "placeholder": "タイトルを入力",
+            }),
+            "content": forms.Textarea(attrs={
+                "class": "form-control",
+                "rows": 12,
+                "placeholder": "日記の内容を入力してください",
+            }),
+        }
+
+
+# =========================
+# MyMail 用フォーム（保存）
+# =========================
 class MyMailForm(forms.ModelForm):
     class Meta:
         model = MyMail
-        fields = ['subject', 'message', 'sender']
-
-    # 各フィールドのラベルを非表示にする
-    subject = forms.CharField(label='', required=True)
-    message = forms.CharField(label='', required=True, widget=forms.Textarea)
-    sender = forms.EmailField(label='', required=True)
-
-
-
-class MyMailForm(forms.ModelForm):
-    # 新しい検索フィールドを追加
-    search = forms.CharField(max_length=100, required=False, label='検索')
-
-    class Meta:
-        model = MyMail
-        fields = ['subject', 'message', 'sender', 'search']
-
-# # class MyMailForm(forms.ModelForm):
-# #     # 既存のフィールド
-# #     subject = forms.CharField(max_length=100)
-# #     message = forms.CharField(widget=forms.Textarea)
-# #     sender = forms.EmailField()
-
-# #     # 新しい検索フィールドを追加
-# #     search = forms.CharField(max_length=100, required=False, label='検索')
-
-# #     class Meta:
-# #         model = MyMail
-# #         fields = ['subject', 'message', 'sender', 'search']
+        fields = ["subject", "message", "sender"]
+        widgets = {
+            "subject": forms.TextInput(attrs={
+                "class": "form-control",
+                "placeholder": "件名",
+            }),
+            "message": forms.Textarea(attrs={
+                "class": "form-control",
+                "rows": 8,
+                "placeholder": "お問い合わせ内容",
+            }),
+            "sender": forms.EmailInput(attrs={
+                "class": "form-control",
+                "placeholder": "メールアドレス",
+            }),
+        }
 
 
-
-# # from django import forms
-# # from .models import MyMail
-
-# # class MyMailForm(forms.ModelForm):
-# #     class Meta:
-# #         model = MyMail
-# #         fields = ['subject', 'message', 'sender']
-
-
-
-###メイルフォームを隠す
-# from django import forms
-# from .models import MyMail
-
-# class MyMailForm(forms.ModelForm):
-#     # 新しい検索フィールドを追加
-#     search = forms.CharField(max_length=100, required=False, label='検索')
-
-#     class Meta:
-#         model = MyMail
-#         fields = ['subject', 'message', 'sender', 'search']
-
-#     # フォームの各フィールドのウィジェットをカスタマイズ
-#     subject = forms.CharField(
-#         label='',
-#         required=True,
-#         widget=forms.TextInput(attrs={'style': 'display: none;'}),
-#     )
-#     message = forms.CharField(
-#         label='',
-#         required=True,
-#         widget=forms.Textarea(attrs={'style': 'display: none;'}),
-#     )
-#     sender = forms.EmailField(
-#         label='',
-#         required=True,
-#         widget=forms.EmailInput(attrs={'style': 'display: none;'}),
-#     )
-
+# =========================
+# MyMail 用フォーム（検索専用）
+# =========================
+class MyMailSearchForm(forms.Form):
+    search = forms.CharField(
+        label="検索",
+        required=False,
+        max_length=100,
+        widget=forms.TextInput(attrs={
+            "class": "form-control",
+            "placeholder": "件名・本文で検索",
+        }),
+    )
