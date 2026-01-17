@@ -2,6 +2,7 @@ import os
 import sys
 from pathlib import Path
 
+# ★ここ超重要（/var/task/src を入れる）
 BASE_DIR = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(BASE_DIR))
 
