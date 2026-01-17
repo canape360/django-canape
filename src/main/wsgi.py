@@ -1,8 +1,9 @@
 import os
 import sys
 
-# ★これを追加（最重要）
-sys.path.append(os.path.dirname(os.path.dirname(__file__)))
+# ★ここが最重要（Vercel対策）
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+sys.path.insert(0, BASE_DIR)
 
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "main.settings")
 
