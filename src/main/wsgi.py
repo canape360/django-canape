@@ -2,10 +2,9 @@ import os
 import sys
 from pathlib import Path
 
-# ===== ここ超重要 =====
-BASE_DIR = Path(__file__).resolve().parent.parent  # /var/task/src
-sys.path.insert(0, str(BASE_DIR))
-# ======================
+# /var/task/src を Python Path に追加
+BASE_DIR = Path(__file__).resolve().parent.parent
+sys.path.append(str(BASE_DIR))
 
 from django.core.wsgi import get_wsgi_application
 
