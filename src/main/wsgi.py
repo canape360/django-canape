@@ -2,12 +2,13 @@ import os
 import sys
 from pathlib import Path
 
-# ★ここ超重要（/var/task/src を入れる）
 BASE_DIR = Path(__file__).resolve().parent.parent
-sys.path.insert(0, str(BASE_DIR))
+sys.path.insert(0, str(BASE_DIR))  # ← ★これが命★
 
-os.environ.setdefault("DJANGO_SETTINGS_MODULE", "main.settings")
+os.environ.setdefault(
+    "DJANGO_SETTINGS_MODULE",
+    "main.settings"
+)
 
 from django.core.wsgi import get_wsgi_application
-
 application = get_wsgi_application()
