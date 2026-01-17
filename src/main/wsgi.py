@@ -1,14 +1,11 @@
 import os
 import sys
-from pathlib import Path
 
-BASE_DIR = Path(__file__).resolve().parent.parent
-sys.path.insert(0, str(BASE_DIR))  # ← ★これが命★
+# ★これを追加（最重要）
+sys.path.append(os.path.dirname(os.path.dirname(__file__)))
 
-os.environ.setdefault(
-    "DJANGO_SETTINGS_MODULE",
-    "main.settings"
-)
+os.environ.setdefault("DJANGO_SETTINGS_MODULE", "main.settings")
 
 from django.core.wsgi import get_wsgi_application
+
 application = get_wsgi_application()
