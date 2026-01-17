@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block content %}
+<h1>管理者用ダッシュボード</h1>
+
+<p>管理者のみアクセス可能です。</p>
+
+<ul>
+  <li><a href="{% url 'admin:index' %}">Django 管理サイト</a></li>
+  <li><a href="{% url 'myapp:list' %}">全日記一覧</a></li>
+  <li><a href="{% url 'myapp:person_list' %}">人物リスト</a></li>
+</ul>
+{% endblock %}
