@@ -24,11 +24,8 @@ DEBUG = os.getenv("DJANGO_DEBUG", "False") == "True"
 # Allowed Hosts
 # ========================
 # 安全にやる場合
-ALLOWED_HOSTS = [
-    "localhost",
-    "127.0.0.1",
-    ".up.railway.app",
-]
+ALLOWED_HOSTS = ["*"]
+
 # ========================
 # Login URLs
 # ========================
