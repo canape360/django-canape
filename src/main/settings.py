@@ -25,9 +25,11 @@ DEBUG = os.environ.get("DEBUG", "False") == "True"
 # ========================
 # 安全にやる場合
 ALLOWED_HOSTS = [
-    "django-canape-production.up.railway.app"
+    "django-canape-production-b13b.up.railway.app",
+    ".up.railway.app",
+    "localhost",
+    "127.0.0.1",
 ]
-# ALLOWED_HOSTS = ["*"]
 
 # ========================
 # Login URLs
