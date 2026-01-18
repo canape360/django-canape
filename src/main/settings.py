@@ -18,13 +18,17 @@ BASE_DIR = Path(__file__).resolve().parent.parent.parent
 # Secret & Debug
 # ========================
 SECRET_KEY = os.environ.get("SECRET_KEY", "fallback-secret-key")
-DEBUG = os.environ.get("DEBUG", "False") == "True"
+DEBUG = os.getenv("DJANGO_DEBUG", "False") == "True"
 
 # ========================
 # Allowed Hosts
 # ========================
 # 安全にやる場合
-ALLOWED_HOSTS = [".up.railway.app"]
+ALLOWED_HOSTS = [
+    "localhost",
+    "127.0.0.1",
+    ".up.railway.app",
+]
 # ========================
 # Login URLs
 # ========================
