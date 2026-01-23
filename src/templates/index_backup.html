@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<title>Django Canape プロジェクト</title>
+<style>
+body { font-family: Arial, sans-serif; line-height: 1.6; background: #f9f9f9; color: #333; padding: 20px; }
+h1, h2, h3 { color: #2c3e50; }
+pre { background: #eee; padding: 10px; border-radius: 5px; overflow-x: auto; }
+code { font-family: Consolas, monospace; }
+a { color: #2980b9; text-decoration: none; }
+a:hover { text-decoration: underline; }
+section { margin-bottom: 40px; }
+</style>
+</head>
+<body>
+
+<h1>Django Canape プロジェクト</h1>
+
+<p>Django Canape の開発・管理・Git運用手順をまとめた HTML版 README です。</p>
+
+<section>
+<h2>1. 環境セットアップ</h2>
+
+<h3>プロジェクトディレクトリに移動</h3>
+<pre><code>cd ~/projects/django-canape</code></pre>
+
+<h3>仮想環境の起動</h3>
+<pre><code>source myenv/bin/activate</code></pre>
+
+<h3>必要なパッケージをインストール</h3>
+<pre><code>pip install -r requirements.txt</code></pre>
+
+<h3>src ディレクトリへ移動</h3>
+<pre><code>cd src</code></pre>
+</section>
+
+<section>
+<h2>2. 開発用サーバー起動</h2>
+<pre><code>python3 manage.py runserver</code></pre>
+<p>開発サーバーはデフォルトで <a href="http://127.0.0.1:8000/">http://127.0.0.1:8000/</a> でアクセス可能です。</p>
+<p>ポートを変更する場合：</p>
+<pre><code>python3 manage.py runserver 8001</code></pre>
+</section>
+
+<section>
+<h2>3. 静的ファイルの管理</h2>
+<pre><code>python manage.py collectstatic --noinput</code></pre>
+<ul>
+<li><code>STATICFILES_DIRS</code> にあるファイルは個別に配置してください。</li>
+<li><code>STATIC_ROOT</code> に収集されます。</li>
+</ul>
+</section>
+
+<section>
+<h2>4. 管理画面でのデータ操作</h2>
+<p><code>admin.py</code> にモデルを登録することで、管理画面に表示されます。</p>
+
+<h3>Python シェルでのデータ確認・編集</h3>
+<pre><code>python3 manage.py shell</code></pre>
+
+<pre><code>from myapp.models import MyModel
+
+# データ取得
+q = MyModel.objects.get(id=1)
+
+# データ表示
+print(q.title)
+print(q.content)
+
+# データ変更
+q.title = "新しいタイトル"
+q.save()</code></pre>
+</section>
+
+<section>
+<h2>5. Git の操作</h2>
+
+<h3>保留中の変更確認</h3>
+<pre><code>git status</code></pre>
+
+<h3>変更をステージング</h3>
+<pre><code>git add .</code></pre>
+<p>特定ファイルだけステージングする場合：</p>
+<pre><code>git add src/main/settings.py 説明.md</code></pre>
+
+<h3>コミット</h3>
+<pre><code>git commit -m "変更内容の説明"</code></pre>
+
+<h3>リモートリポジトリに反映</h3>
+<pre><code>git push</code></pre>
+
+<h3>保留中変更を破棄（削除）したい場合</h3>
+<pre><code>git restore .
+git clean -df</code></pre>
+<p>⚠️ 注意：<code>git clean -df</code> は未追跡ファイルを削除します。必ず必要なファイルがコミット済みか確認してください。</p>
+</section>
+
+<section>
+<h2>6. 開発中に使う便利リンク（開発サーバー起動中）</h2>
+<ul>
+<li><a href="http://127.0.0.1:8000/myapp/">myapp 一覧</a></li>
+<li><a href="http://127.0.0.1:8000/myapp/form/">新規フォーム</a></li>
+<li><a href="http://127.0.0.1:8000/myapp/detail/16/">詳細ページ例</a></li>
+<li><a href="http://127.0.0.1:8000/admin/">管理画面</a></li>
+<li><a href="http://127.0.0.1:8000/admin/myapp/myapp/1/change/">管理画面 MyApp 編集例</a></li>
+</ul>
+</section>
+
+<section>
+<h2>7. 注意事項</h2>
+<ul>
+<li>静的ファイルの配置場所は間違えないようにしてください。</li>
+<li>データベース（SQLite や PostgreSQL）の変更はバックアップを推奨します。</li>
+<li>Git の操作前には必ず <code>git status</code> で保留中変更を確認してください。</li>
+</ul>
+</section>
+
+</body>
+</html>
