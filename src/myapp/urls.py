@@ -1,4 +1,3 @@
-
 from django.urls import path
 from . import views
 
@@ -23,4 +22,3 @@ urlpatterns = [
     # 一般ユーザー専用ページ
     path("dashboard/", views.user_dashboard, name="dashboard"),
 ]
-
