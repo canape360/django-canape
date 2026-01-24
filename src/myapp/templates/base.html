@@ -19,26 +19,32 @@
 <body>
 <header>
   <nav class="navbar navbar-dark bg-primary px-3">
-    <style>
-      .navbar a { color: white; text-decoration: none; margin-right: 10px; }
-    </style>
- 
+  <style>
+    .navbar a { color: white; text-decoration: none; margin-right: 10px; }
+    .navbar span { color: white; margin-right: 10px; }
+  </style>
+
   <a href="/">Home</a>
-  <a href="{% url 'myapp:list' %}">日記情報</a>
-
-  <a href="{% url 'myapp:detail' 13 %}">詳しい情報</a>
-
-  <a href="{% url 'myapp:form' %}">投稿フォーム</a>
-
+  <a href="{% url 'myapp:list' %}">list</a>
+  <a href="{% url 'myapp:detail_latest' %}">最新の詳細</a>
+  <a href="{% url 'myapp:form' %}">新規投稿</a>
   <a href="{% url 'myapp:mymail' %}">コンタクト</a>
-
-  <a href="{% url 'login' %}">管理ログイン</a>
-
-  <a href="/admin/">管理サイト</a>
-
   <a href="{% url 'myapp:person_list' %}">人物情報</a>
+
+  {% if user.is_authenticated %}
+    <span>こんにちは {{ user.username }}</span>
+
+    {% if user.is_staff %}
+      <a href="/admin/">管理サイト</a>
+    {% endif %}
+
+    <a href="{% url 'logout' %}">ログアウト</a>
+  {% else %}
+    <a href="{% url 'login' %}">ログイン</a>
+  {% endif %}
 </nav>
 </header>
+
 
 <main class="container my-4">
   {% block content %}{% endblock %}

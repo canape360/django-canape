@@ -9,6 +9,15 @@ from .models import MyApp, Person, MyMail
 from .forms import MyAppForm, MyMailForm, MyMailSearchForm
 from django.contrib.auth.decorators import login_required
 
+from django.shortcuts import redirect
+
+def myapp_detail_latest(request):
+    obj = MyApp.objects.order_by("-id").first()
+    if not obj:
+        return redirect("myapp:list")
+    return redirect("myapp:detail", pk=obj.pk)
+
+
 @login_required
 def user_dashboard(request):
     return render(request, "myapp/user_dashboard.html")
@@ -54,7 +63,7 @@ def myappListView(request):
 
 def myappDetailView(request, pk):
     obj = get_object_or_404(MyApp, pk=pk)
-    return render(request, "myapp/myapp-detail.html", {
+    return render(request, "myapp/myapp_detail.html", {
         "object": obj
     })
 

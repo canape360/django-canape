@@ -32,6 +32,7 @@ ALLOWED_HOSTS = ["*"]
 # ========================
 LOGIN_URL = '/accounts/login/'
 LOGIN_REDIRECT_URL = 'myapp:person_list'
+LOGOUT_REDIRECT_URL = '/'
 
 # ========================
 # Installed Apps
