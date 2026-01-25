@@ -10,3 +10,7 @@ kokokara.md
 
 # Vercel
 vercel.json
+# --- allow static files for Django ---
+!static/
+!static/css/
+!static/css/index.css
