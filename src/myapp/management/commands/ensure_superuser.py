@@ -7,16 +7,26 @@ class Command(BaseCommand):
     help = "Create or update a superuser from environment variables."
 
     def handle(self, *args, **options):
+        # ← ここで self が使える
+        self.stdout.write("### ensure_superuser running ###")
+
         username = os.environ.get("DJANGO_SUPERUSER_USERNAME")
         email = os.environ.get("DJANGO_SUPERUSER_EMAIL") or ""
         password = os.environ.get("DJANGO_SUPERUSER_PASSWORD")
 
         if not username or not password:
-            self.stdout.write(self.style.WARNING("DJANGO_SUPERUSER_USERNAME/PASSWORD not set. Skipping."))
+            self.stdout.write(
+                self.style.WARNING(
+                    "DJANGO_SUPERUSER_USERNAME/PASSWORD not set. Skipping."
+                )
+            )
             return
 
         User = get_user_model()
-        user, created = User.objects.get_or_create(username=username, defaults={"email": email})
+        user, created = User.objects.get_or_create(
+            username=username,
+            defaults={"email": email},
+        )
 
         user.email = email
         user.is_staff = True
