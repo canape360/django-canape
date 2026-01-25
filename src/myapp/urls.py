@@ -1,14 +1,19 @@
 import os
+import traceback
+
 from django.urls import path
 from django.http import HttpResponse, JsonResponse
 from django.db import connection
+
 from . import views
 
 app_name = "myapp"
 
+
 def health(request):
     commit = os.environ.get("RENDER_GIT_COMMIT", "unknown")
     return HttpResponse(f"ok commit={commit}")
+
 
 def dbcheck(request):
     return JsonResponse({
@@ -17,9 +22,21 @@ def dbcheck(request):
     })
 
 
+def list_debug(request):
+    try:
+        return views.myappListView(request)
+    except Exception:
+        tb = traceback.format_exc()
+        return HttpResponse(f"<pre>{tb}</pre>", status=500)
+
+
 urlpatterns = [
     # 疎通確認
     path("health/", health, name="health"),
+    path("dbcheck/", dbcheck, name="dbcheck"),
+
+    # ★ これが無かった（超重要）
+    path("list-debug/", list_debug, name="list_debug"),
 
     # /myapp/ の入口
     path("", views.person_list, name="root"),
@@ -37,12 +54,7 @@ urlpatterns = [
     path("mymail/", views.mymailCreateView, name="mymail"),
     path("mymail_list/", views.mymail_list, name="mymail_list"),
 
-    # 一般ユーザー登録
+    # signup / dashboard
     path("signup/", views.signup_view, name="signup"),
-
-    # 一般ユーザー専用ページ
     path("dashboard/", views.user_dashboard, name="dashboard"),
-
-    path("dbcheck/", dbcheck, name="dbcheck"),
-
 ]
