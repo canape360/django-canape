@@ -128,25 +128,18 @@ USE_TZ = True
 # ========================
 STATIC_URL = "/static/"
 STATIC_ROOT = BASE_DIR / "staticfiles"
+
 STATICFILES_DIRS = []
+candidates = [
+    BASE_DIR / "static",                 # 例: /.../src/static
+    BASE_DIR / "src" / "static",         # 例: /.../src/src/static
+    BASE_DIR.parent / "static",          # 例: /.../static
+    BASE_DIR.parent / "src" / "static",  # 例: /.../src/static（1つ上がrepo rootの時）
+]
+for p in candidates:
+    if p.exists():
+        STATICFILES_DIRS.append(p)
 
-p1 = BASE_DIR / "static"
-if p1.exists():
-    STATICFILES_DIRS.append(p1)
-
-p2 = BASE_DIR.parent / "static"
-if p2.exists():
-    STATICFILES_DIRS.append(p2)
-
-p3 = BASE_DIR.parent / "src" / "static"
-if p3.exists():
-    STATICFILES_DIRS.append(p3)
-
-STORAGES = {
-    "staticfiles": {
-        "BACKEND": "whitenoise.storage.CompressedStaticFilesStorage",
-    },
-}
 
 
 
