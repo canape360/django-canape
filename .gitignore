@@ -46,3 +46,7 @@ keep_*.py
 # ========================
 /kokokara.md
 kokokara.md
+
+# 一時ディレクトリ（Render / ローカル生成物）
+src/src/
+src/static/img/
