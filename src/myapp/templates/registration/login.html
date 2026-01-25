@@ -1,12 +1,17 @@
-{% extends "base.html" %}
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="utf-8">
+    <title>Login</title>
+</head>
+<body>
+<h1>Login</h1>
 
-{% block title %}Login{% endblock %}
+<form method="post">
+  {% csrf_token %}
+  {{ form.as_p }}
+  <button type="submit">ログイン</button>
+</form>
 
-{% block content %}
-{% load static %}
-<link rel="stylesheet" href="{% static 'css/index.css' %}">
-
-<h1>Login Page</h1>
-<p></p>
-<p><a href=" /admin/ ">管理サイト</a> からログインしてください。</p>
-{% endblock %}
+</body>
+</html>
