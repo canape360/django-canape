@@ -10,6 +10,12 @@ from .models import MyApp, Person, MyMail
 from .forms import MyAppForm, MyMailForm, MyMailSearchForm
 
 
+@login_required
+def user_dashboard(request):
+    return render(request, "myapp/user_dashboard.html")
+
+
+
 # =========================
 # 共通ページ
 # =========================
