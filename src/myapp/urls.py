@@ -1,11 +1,17 @@
 from django.urls import path
 from . import views
 from django.views.generic import TemplateView
+from django.http import HttpResponse
+from django.urls import path
+
+def health(request):
+    return HttpResponse("ok")
 
 app_name = "myapp"
 
 urlpatterns = [
     # /myapp/ の入口
+    path("health/", health),
     path("", views.person_list, name="root"),
 
     path("person_list/", views.person_list, name="person_list"),
