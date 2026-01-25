@@ -1,34 +1,13 @@
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth import login
-#from django.shortcuts import render, redirect, get_object_or_404
-from django.views.generic import TemplateView
-#from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 
-#from .models import MyApp, Person, MyMail
-#from .forms import MyAppForm, MyMailForm, MyMailSearchForm
 from django.contrib.auth.decorators import login_required
+from django.shortcuts import render, redirect, get_object_or_404
+from django.views.generic import TemplateView
 
-from django.shortcuts import redirect
-from django.http import HttpResponse
-# views.py 冒頭をこうする（切り分け用）
-
-from django.http import HttpResponse
-
-def myappListView(request):
-    return HttpResponse("views loaded OK")
-
-
-def myapp_detail_latest(request):
-    obj = MyApp.objects.order_by("-id").first()
-    if not obj:
-        return redirect("myapp:list")
-    return redirect("myapp:detail", pk=obj.pk)
-
-
-@login_required
-def user_dashboard(request):
-    return render(request, "myapp/user_dashboard.html")
+from .models import MyApp, Person, MyMail
+from .forms import MyAppForm, MyMailForm, MyMailSearchForm
 
 
 # =========================
@@ -43,8 +22,8 @@ class AboutView(TemplateView):
 
 
 def loggedin_view(request):
-    return render(request, 'loggedin_template.html', {
-        'message': 'ログインしました。ようこそ！',
+    return render(request, "loggedin_template.html", {
+        "message": "ログインしました。ようこそ！",
     })
 
 
@@ -54,8 +33,8 @@ def loggedin_view(request):
 @login_required
 def person_list(request):
     persons = Person.objects.all()
-    return render(request, 'myapp/person_list.html', {
-        'persons': persons
+    return render(request, "myapp/person_list.html", {
+        "persons": persons
     })
 
 
@@ -63,8 +42,17 @@ def person_list(request):
 # MyApp（CRUD）
 # =========================
 def myappListView(request):
-    return render(request, "myapp/myapp_list.html", {})
+    objects = MyApp.objects.all()
+    return render(request, "myapp/myapp_list.html", {
+        "object_list": objects
+    })
 
+
+def myapp_detail_latest(request):
+    obj = MyApp.objects.order_by("-id").first()
+    if not obj:
+        return redirect("myapp:list")
+    return redirect("myapp:detail", pk=obj.pk)
 
 
 def myappDetailView(request, pk):
@@ -79,7 +67,7 @@ def myappCreateView(request):
         form = MyAppForm(request.POST)
         if form.is_valid():
             obj = form.save()
-            return redirect('myapp:detail', pk=obj.pk)
+            return redirect("myapp:detail", pk=obj.pk)
     else:
         form = MyAppForm()
 
@@ -95,13 +83,13 @@ def myappUpdateView(request, pk):
         form = MyAppForm(request.POST, instance=obj)
         if form.is_valid():
             form.save()
-            return redirect('myapp:detail', pk=obj.pk)
+            return redirect("myapp:detail", pk=obj.pk)
     else:
         form = MyAppForm(instance=obj)
 
-    return render(request, 'myapp/myapp_update.html', {
-        'form': form,
-        'object': obj,
+    return render(request, "myapp/myapp_update.html", {
+        "form": form,
+        "object": obj,
     })
 
 
@@ -126,7 +114,7 @@ def mymailCreateView(request):
         form = MyMailForm(request.POST)
         if form.is_valid():
             form.save()
-            messages.success(request, 'メールを送信しました')
+            messages.success(request, "メールを送信しました")
             return redirect("myapp:mymail_list")
     else:
         form = MyMailForm()
@@ -141,14 +129,15 @@ def mymail_list(request):
     objects = MyMail.objects.all()
 
     if search_form.is_valid():
-        search = search_form.cleaned_data.get('search')
+        search = search_form.cleaned_data.get("search")
         if search:
             objects = objects.filter(subject__icontains=search)
 
-    return render(request, 'myapp/mymail_list.html', {
-        'object_list': objects,
-        'search_form': search_form,
+    return render(request, "myapp/mymail_list.html", {
+        "object_list": objects,
+        "search_form": search_form,
     })
+
 
 # =========================
 # User Signup（一般ユーザー登録）
@@ -158,8 +147,8 @@ def signup_view(request):
         form = UserCreationForm(request.POST)
         if form.is_valid():
             user = form.save()
-            login(request, user)  # 登録後に自動ログイン
-            return redirect("myapp:person_list")  # ログイン後ページ
+            login(request, user)
+            return redirect("myapp:person_list")
     else:
         form = UserCreationForm()
 
