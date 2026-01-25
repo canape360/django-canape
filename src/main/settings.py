@@ -122,24 +122,14 @@ LANGUAGE_CODE = 'ja'
 TIME_ZONE = 'Asia/Tokyo'
 USE_I18N = True
 USE_TZ = True
-
 # ========================
 # Static files
 # ========================
 STATIC_URL = "/static/"
 STATIC_ROOT = BASE_DIR / "staticfiles"
 
-STATICFILES_DIRS = []
-candidates = [
-    BASE_DIR / "static",                 # 例: /.../src/static
-    BASE_DIR / "src" / "static",         # 例: /.../src/src/static
-    BASE_DIR.parent / "static",          # 例: /.../static
-    BASE_DIR.parent / "src" / "static",  # 例: /.../src/static（1つ上がrepo rootの時）
-]
-for p in candidates:
-    if p.exists():
-        STATICFILES_DIRS.append(p)
-
+# Render の Root Directory が "src" なので、ここが確実
+STATICFILES_DIRS = [BASE_DIR / "static"]
 
 
 
