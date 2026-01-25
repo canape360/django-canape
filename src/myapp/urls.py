@@ -1,28 +1,29 @@
 from django.urls import path
-from . import views
-from django.views.generic import TemplateView
 from django.http import HttpResponse
-from django.urls import path
+from . import views
+
+app_name = "myapp"
 
 def health(request):
     return HttpResponse("ok")
 
-app_name = "myapp"
-
 urlpatterns = [
-    # /myapp/ の入口
-    path("health/", health),
-    path("", views.person_list, name="root"),
+    # 疎通確認
+    path("health/", health, name="health"),
 
+    # /myapp/ の入口
+    path("", views.person_list, name="root"),
     path("person_list/", views.person_list, name="person_list"),
 
-    path("list/", TemplateView.as_view(template_name="index.html")),
+    # MyApp CRUD
+    path("list/", views.myappListView, name="list"),
     path("detail/", views.myapp_detail_latest, name="detail_latest"),
     path("detail/<int:pk>/", views.myappDetailView, name="detail"),
     path("form/", views.myappCreateView, name="form"),
     path("update/<int:pk>/", views.myappUpdateView, name="update"),
     path("delete/<int:pk>/", views.myappDeleteView, name="delete"),
 
+    # MyMail
     path("mymail/", views.mymailCreateView, name="mymail"),
     path("mymail_list/", views.mymail_list, name="mymail_list"),
 
