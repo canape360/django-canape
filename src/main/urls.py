@@ -15,7 +15,7 @@ urlpatterns = [
 
     # ✅ 一般ユーザー登録
     path('accounts/signup/', signup_view, name='signup'),
-    path("", TemplateView.as_view(template_name="index.html")),
+    
 
     # Django標準 認証（login / logout / password）
     path('accounts/', include('django.contrib.auth.urls')),
