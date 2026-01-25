@@ -10,6 +10,7 @@ from .forms import MyAppForm, MyMailForm, MyMailSearchForm
 from django.contrib.auth.decorators import login_required
 
 from django.shortcuts import redirect
+from django.http import HttpResponse
 
 def myapp_detail_latest(request):
     obj = MyApp.objects.order_by("-id").first()
@@ -55,10 +56,9 @@ def person_list(request):
 # MyApp（CRUD）
 # =========================
 def myappListView(request):
-    objects = MyApp.objects.all()
-    return render(request, "myapp/myapp_list.html", {
-        "object_list": objects
-    })
+    count = MyApp.objects.count()
+    return HttpResponse(f"MyApp count = {count}")
+
 
 
 def myappDetailView(request, pk):
