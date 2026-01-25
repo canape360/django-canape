@@ -19,8 +19,9 @@ def user_dashboard(request):
 # =========================
 # 共通ページ
 # =========================
-class IndexView(TemplateView):
-    template_name = "index.html"
+def myappListView(request):
+    objects = MyApp.objects.all()
+    return render(request, "myapp/myapp_list.html", {"object_list": objects})
 
 
 class AboutView(TemplateView):
