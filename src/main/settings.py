@@ -122,14 +122,16 @@ LANGUAGE_CODE = 'ja'
 TIME_ZONE = 'Asia/Tokyo'
 USE_I18N = True
 USE_TZ = True
+
 # ========================
 # Static files
 # ========================
 STATIC_URL = "/static/"
 STATIC_ROOT = BASE_DIR / "staticfiles"
 
-# Render の Root Directory が "src" なので、ここが確実
-STATICFILES_DIRS = [BASE_DIR / "static"]
+# BASE_DIR が src/main を指す場合でも、必ず src/static を拾う
+STATICFILES_DIRS = [BASE_DIR.parent / "static"]
+
 
 
 
