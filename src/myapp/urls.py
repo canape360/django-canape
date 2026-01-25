@@ -1,5 +1,6 @@
 from django.urls import path
 from . import views
+from django.views.generic import TemplateView
 
 app_name = "myapp"
 
@@ -9,7 +10,7 @@ urlpatterns = [
 
     path("person_list/", views.person_list, name="person_list"),
 
-    path("list/", views.myappListView, name="list"),
+    path("list/", TemplateView.as_view(template_name="index.html")),
     path("detail/", views.myapp_detail_latest, name="detail_latest"),
     path("detail/<int:pk>/", views.myappDetailView, name="detail"),
     path("form/", views.myappCreateView, name="form"),
