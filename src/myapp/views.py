@@ -63,8 +63,7 @@ def person_list(request):
 # MyApp（CRUD）
 # =========================
 def myappListView(request):
-    count = MyApp.objects.count()
-    return HttpResponse(f"MyApp count = {count}")
+    return render(request, "myapp/myapp_list.html", {})
 
 
 
