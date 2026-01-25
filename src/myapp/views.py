@@ -1,16 +1,23 @@
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth import login
-from django.shortcuts import render, redirect, get_object_or_404
+#from django.shortcuts import render, redirect, get_object_or_404
 from django.views.generic import TemplateView
-from django.contrib.auth.decorators import login_required
+#from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 
-from .models import MyApp, Person, MyMail
-from .forms import MyAppForm, MyMailForm, MyMailSearchForm
+#from .models import MyApp, Person, MyMail
+#from .forms import MyAppForm, MyMailForm, MyMailSearchForm
 from django.contrib.auth.decorators import login_required
 
 from django.shortcuts import redirect
 from django.http import HttpResponse
+# views.py 冒頭をこうする（切り分け用）
+
+from django.http import HttpResponse
+
+def myappListView(request):
+    return HttpResponse("views loaded OK")
+
 
 def myapp_detail_latest(request):
     obj = MyApp.objects.order_by("-id").first()
