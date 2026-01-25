@@ -44,8 +44,11 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'myapp',
+
+    # AppConfig を明示指定（ready() を有効化）
+    'myapp.apps.MyappConfig',
 ]
+
 
 # ========================
 # Middleware
