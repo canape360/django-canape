@@ -1,19 +1,21 @@
+import os
 from django.urls import path
-from django.http import HttpResponse
-from . import views
-from django.http import JsonResponse
+from django.http import HttpResponse, JsonResponse
 from django.db import connection
-
+from . import views
 
 app_name = "myapp"
 
 def health(request):
-    return HttpResponse("ok")
+    commit = os.environ.get("RENDER_GIT_COMMIT", "unknown")
+    return HttpResponse(f"ok commit={commit}")
+
 def dbcheck(request):
     return JsonResponse({
         "vendor": connection.vendor,
         "tables": connection.introspection.table_names(),
     })
+
 
 urlpatterns = [
     # 疎通確認
