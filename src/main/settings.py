@@ -13,7 +13,9 @@ load_dotenv()  # プロジェクトルートの .env を読み込み
 # BASE_DIR
 # src/main/settings.py から src/ を基準にする
 # ========================
-BASE_DIR = Path(__file__).resolve().parent.parent.parent
+BASE_DIR = Path(__file__).resolve().parent.parent  # ← src/ を指す想定
+
+
 
 # ========================
 # Secret & Debug
@@ -130,10 +132,14 @@ STATIC_URL = "/static/"
 STATIC_ROOT = BASE_DIR / "staticfiles"
 
 # BASE_DIR が src/main を指す場合でも、必ず src/static を拾う
-STATICFILES_DIRS = [BASE_DIR.parent / "static"]
+STATICFILES_DIRS = [BASE_DIR / "static"]
 
 
-
+STORAGES = {
+    "staticfiles": {
+        "BACKEND": "whitenoise.storage.CompressedStaticFilesStorage",
+    },
+}
 
 
 # ========================
