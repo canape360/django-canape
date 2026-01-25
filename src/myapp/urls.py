@@ -1,11 +1,19 @@
 from django.urls import path
 from django.http import HttpResponse
 from . import views
+from django.http import JsonResponse
+from django.db import connection
+
 
 app_name = "myapp"
 
 def health(request):
     return HttpResponse("ok")
+def dbcheck(request):
+    return JsonResponse({
+        "vendor": connection.vendor,
+        "tables": connection.introspection.table_names(),
+    })
 
 urlpatterns = [
     # 疎通確認
@@ -32,4 +40,7 @@ urlpatterns = [
 
     # 一般ユーザー専用ページ
     path("dashboard/", views.user_dashboard, name="dashboard"),
+
+    path("dbcheck/", dbcheck, name="dbcheck"),
+
 ]
