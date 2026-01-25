@@ -128,26 +128,26 @@ USE_TZ = True
 # ========================
 STATIC_URL = "/static/"
 STATIC_ROOT = BASE_DIR / "staticfiles"
-
-# ここが重要：static の候補を複数見る
 STATICFILES_DIRS = []
 
-# 1) ふつうの構成（manage.py と同階層に static がある想定）
 p1 = BASE_DIR / "static"
 if p1.exists():
     STATICFILES_DIRS.append(p1)
 
-# 2) あなたの構成対策（リポジトリ直下 src/static を確実に拾う）
-p2 = BASE_DIR.parent / "static"   # BASE_DIR が src なら、1つ上が repo ルート
+p2 = BASE_DIR.parent / "static"
 if p2.exists():
     STATICFILES_DIRS.append(p2)
 
-# WhiteNoise（すでに admin が 200 なので入ってる前提）
+p3 = BASE_DIR.parent / "src" / "static"
+if p3.exists():
+    STATICFILES_DIRS.append(p3)
+
 STORAGES = {
     "staticfiles": {
         "BACKEND": "whitenoise.storage.CompressedStaticFilesStorage",
     },
 }
+
 
 
 
