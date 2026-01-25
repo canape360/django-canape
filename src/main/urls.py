@@ -1,31 +1,17 @@
 from django.contrib import admin
 from django.urls import path, include
-from django.conf import settings
-from django.conf.urls.static import static
-
-from myapp.views import IndexView, AboutView, signup_view
 from django.views.generic import TemplateView
 
-
 urlpatterns = [
-    path('admin/', admin.site.urls),
+    path("admin/", admin.site.urls),
 
-    # トップページ
-    path('', IndexView.as_view(), name='index'),
+    # トップとAboutはテンプレ直指定（myapp.viewsに依存しない）
+    path("", TemplateView.as_view(template_name="index.html"), name="index"),
+    path("about/", TemplateView.as_view(template_name="about.html"), name="about"),
 
-    # ✅ 一般ユーザー登録
-    path('accounts/signup/', signup_view, name='signup'),
-    
+    # 認証
+    path("accounts/", include("django.contrib.auth.urls")),
 
-    # Django標準 認証（login / logout / password）
-    path('accounts/', include('django.contrib.auth.urls')),
-
-    # myapp（業務・一般ユーザー）
-    path('myapp/', include('myapp.urls')),
-
-    # About
-    path('about/', AboutView.as_view(), name='about'),
+    # myapp
+    path("myapp/", include("myapp.urls")),
 ]
-
-if settings.DEBUG:
-    urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
