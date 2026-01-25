@@ -126,10 +126,22 @@ USE_TZ = True
 # ========================
 # Static files
 # ========================
-STATIC_URL = '/static/'
-STATICFILES_DIRS = [BASE_DIR / "static"]  # 開発用
-STATIC_ROOT = BASE_DIR / "staticfiles"    # collectstatic 先
-STATICFILES_STORAGE = 'django.contrib.staticfiles.storage.StaticFilesStorage'
+STATIC_URL = "/static/"
+STATIC_ROOT = BASE_DIR / "staticfiles"   # collectstatic の出力先
+
+# 開発用 static（存在する時だけ登録）
+STATICFILES_DIRS = []
+candidate = BASE_DIR / "static"
+if candidate.exists():
+    STATICFILES_DIRS.append(candidate)
+
+# WhiteNoise 推奨
+STORAGES = {
+    "staticfiles": {
+        "BACKEND": "whitenoise.storage.CompressedStaticFilesStorage",
+    },
+}
+
 
 # ========================
 # Media files
