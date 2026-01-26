@@ -1,4 +1,12 @@
-<h2>ユーザー登録</h2>
+{% extends "base.html" %}
+{% block content %}
+<h1>ユーザー登録</h1>
+
+{% if form.errors %}
+  <div style="padding:10px; background:#fee; border:1px solid #f99;">
+    {{ form.errors }}
+  </div>
+{% endif %}
 
 <form method="post">
   {% csrf_token %}
@@ -6,7 +14,8 @@
   <button type="submit">登録</button>
 </form>
 
-<p>
-  すでにアカウントをお持ちですか？
-  <a href="{% url 'login' %}">ログイン</a>
-</p>
+<p><a href="{% url 'login' %}">ログインはこちら</a></p>
+{% endblock %}
+
+
+<!-- src/templates/registration/signup.html -->

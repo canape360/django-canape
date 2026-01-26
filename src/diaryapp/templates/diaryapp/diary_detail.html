@@ -1,0 +1,15 @@
+<!-- diaryapp/templates/diaryapp/diary_detail.html -->
+ {% extends "base.html" %}
+{% block content %}
+<h1>{{ object.title }}</h1>
+
+<p>{{ object.created_at|date:"Y-m-d H:i" }}</p>
+<div style="white-space: pre-wrap;">{{ object.content }}</div>
+
+<hr>
+<p>
+  <a href="{% url 'diaryapp:update' object.pk %}">編集</a> |
+  <a href="{% url 'diaryapp:delete' object.pk %}">削除</a> |
+  <a href="{% url 'diaryapp:list' %}">一覧へ</a>
+</p>
+{% endblock %}

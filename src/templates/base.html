@@ -1,0 +1,40 @@
+{% load static %}
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% block title %}Django Canape{% endblock %}</title>
+  <link rel="stylesheet" href="{% static 'css/index.css' %}">
+</head>
+<body>
+
+<nav class="app-navbar">
+  <a href="/">Home</a>
+  <a href="/about/">About</a>
+  <a href="{% url 'diaryapp:list' %}">Diary</a>
+  <a href="{% url 'diaryapp:public_list' %}">Public Diary</a>
+  <a href="/myapp/">MyApp</a>
+
+  <span class="app-navbar-right">
+    {% if user.is_authenticated %}
+      {{ user.username }} |
+      <form action="{% url 'logout' %}" method="post" class="logout-form">
+        {% csrf_token %}
+        <button type="submit" class="logout-button">Logout</button>
+      </form>
+    {% else %}
+      <a href="{% url 'login' %}">Login</a>
+      <a href="{% url 'signup' %}">Sign up</a>
+    {% endif %}
+  </span>
+</nav>
+
+<hr>
+
+<main>
+  {% block content %}{% endblock %}
+</main>
+
+</body>
+</html>

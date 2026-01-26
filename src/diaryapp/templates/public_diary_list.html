@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+{% block content %}
+<h1>公開日記</h1>
+
+{% if diaries %}
+  <ul>
+    {% for d in diaries %}
+      <li>
+        <a href="{% url 'diaryapp:public_detail' d.pk %}">{{ d.title }}</a>
+        - {{ d.user.username }}
+        （{{ d.created_at|date:"Y-m-d H:i" }}）
+      </li>
+    {% endfor %}
+  </ul>
+{% else %}
+  <p>公開日記はまだありません。</p>
+{% endif %}
+
+{% endblock %}
+<!-- diaryapp/templates/diaryapp/public_diary_list.html -->

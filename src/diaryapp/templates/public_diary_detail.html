@@ -1,0 +1,15 @@
+<!-- diaryapp/templates/diaryapp/public_diary_detail.html -->
+ {% extends "base.html" %}
+{% block content %}
+<h1>{{ object.title }}</h1>
+
+<p>
+  投稿者: {{ object.user.username }} /
+  {{ object.created_at|date:"Y-m-d H:i" }}
+</p>
+
+<div style="white-space: pre-wrap;">{{ object.content }}</div>
+
+<hr>
+<p><a href="{% url 'diaryapp:public_list' %}">公開一覧へ</a></p>
+{% endblock %}

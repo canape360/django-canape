@@ -45,6 +45,7 @@ INSTALLED_APPS = [
 
     # AppConfig を明示指定（ready() を有効化）
     "myapp.apps.MyappConfig",
+     "diaryapp",
 ]
 
 # ========================
@@ -145,6 +146,8 @@ MEDIA_ROOT = BASE_DIR / "media"
 # ========================
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
-LOGIN_URL = "/accounts/login/"
-LOGIN_REDIRECT_URL = "/myapp/"
+
+LOGIN_REDIRECT_URL = "/diary/"
 LOGOUT_REDIRECT_URL = "/"
+LOGIN_URL = "/accounts/login/"
+

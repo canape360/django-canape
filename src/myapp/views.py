@@ -15,46 +15,26 @@ def user_dashboard(request):
     return render(request, "myapp/user_dashboard.html")
 
 
-
-# =========================
-# 共通ページ
-# =========================
-def myappListView(request):
-    objects = MyApp.objects.all()
-    return render(request, "myapp/myapp_list.html", {"object_list": objects})
-
-
 class AboutView(TemplateView):
     template_name = "about.html"
 
 
-def loggedin_view(request):
-    return render(request, "loggedin_template.html", {
-        "message": "ログインしました。ようこそ！",
-    })
-
-
-# =========================
-# Person
-# =========================
 @login_required
 def person_list(request):
     persons = Person.objects.all()
-    return render(request, "myapp/person_list.html", {
-        "persons": persons
-    })
+    return render(request, "myapp/person_list.html", {"persons": persons})
 
 
 # =========================
 # MyApp（CRUD）
 # =========================
+@login_required
 def myappListView(request):
-    objects = MyApp.objects.all()
-    return render(request, "myapp/myapp_list.html", {
-        "object_list": objects
-    })
+    objects = MyApp.objects.all().order_by("-id")
+    return render(request, "myapp/myapp_list.html", {"object_list": objects})
 
 
+@login_required
 def myapp_detail_latest(request):
     obj = MyApp.objects.order_by("-id").first()
     if not obj:
@@ -62,13 +42,13 @@ def myapp_detail_latest(request):
     return redirect("myapp:detail", pk=obj.pk)
 
 
+@login_required
 def myappDetailView(request, pk):
     obj = get_object_or_404(MyApp, pk=pk)
-    return render(request, "myapp/myapp_detail.html", {
-        "object": obj
-    })
+    return render(request, "myapp/myapp_detail.html", {"object": obj})
 
 
+@login_required
 def myappCreateView(request):
     if request.method == "POST":
         form = MyAppForm(request.POST)
@@ -77,15 +57,12 @@ def myappCreateView(request):
             return redirect("myapp:detail", pk=obj.pk)
     else:
         form = MyAppForm()
-
-    return render(request, "myapp/myapp_form.html", {
-        "form": form
-    })
+    return render(request, "myapp/myapp_form.html", {"form": form})
 
 
+@login_required
 def myappUpdateView(request, pk):
     obj = get_object_or_404(MyApp, pk=pk)
-
     if request.method == "POST":
         form = MyAppForm(request.POST, instance=obj)
         if form.is_valid():
@@ -93,23 +70,16 @@ def myappUpdateView(request, pk):
             return redirect("myapp:detail", pk=obj.pk)
     else:
         form = MyAppForm(instance=obj)
-
-    return render(request, "myapp/myapp_update.html", {
-        "form": form,
-        "object": obj,
-    })
+    return render(request, "myapp/myapp_update.html", {"form": form, "object": obj})
 
 
+@login_required
 def myappDeleteView(request, pk):
     obj = get_object_or_404(MyApp, pk=pk)
-
     if request.method == "POST":
         obj.delete()
         return redirect("myapp:list")
-
-    return render(request, "myapp/delete_template.html", {
-        "object": obj,
-    })
+    return render(request, "myapp/delete_template.html", {"object": obj})
 
 
 # =========================
@@ -125,15 +95,13 @@ def mymailCreateView(request):
             return redirect("myapp:mymail_list")
     else:
         form = MyMailForm()
-
-    return render(request, "myapp/mymail-form.html", {
-        "form": form,
-    })
+    return render(request, "myapp/mymail-form.html", {"form": form})
 
 
+@login_required
 def mymail_list(request):
     search_form = MyMailSearchForm(request.GET)
-    objects = MyMail.objects.all()
+    objects = MyMail.objects.all().order_by("-id")
 
     if search_form.is_valid():
         search = search_form.cleaned_data.get("search")
@@ -146,9 +114,6 @@ def mymail_list(request):
     })
 
 
-# =========================
-# User Signup（一般ユーザー登録）
-# =========================
 def signup_view(request):
     if request.method == "POST":
         form = UserCreationForm(request.POST)
@@ -158,7 +123,4 @@ def signup_view(request):
             return redirect("myapp:person_list")
     else:
         form = UserCreationForm()
-
-    return render(request, "registration/signup.html", {
-        "form": form
-    })
+    return render(request, "registration/signup.html", {"form": form})

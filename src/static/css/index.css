@@ -1,5 +1,43 @@
-.navbar a {
-    color: white;
-    text-decoration: none;
-    margin-right: 10px;
+/* src/static/css/index.css */
+/* ナビゲーション */
+/* 自作ナビ（Bootstrapと衝突しない） */
+.app-navbar {
+  display: flex;
+  gap: 12px;
+  align-items: center;
 }
+
+.app-navbar-right {
+  margin-left: auto;
+}
+
+.app-navbar a {
+  color: white;
+  text-decoration: none;
+  margin-right: 10px;
+}
+
+.logout-form {
+  display: inline;
+  margin: 0;
+}
+
+.logout-button {
+  cursor: pointer;
+}
+/* READMEページ用（Homeの本文） */
+main {
+  font-family: Arial, sans-serif;
+  line-height: 1.6;
+  background: #f9f9f9;
+  color: #333;
+  padding: 20px;
+}
+
+main h1, main h2, main h3 { color: #2c3e50; }
+main pre { background: #eee; padding: 10px; border-radius: 5px; overflow-x: auto; }
+main code { font-family: Consolas, monospace; }
+main a { color: #2980b9; text-decoration: none; }
+main a:hover { text-decoration: underline; }
+main section { margin-bottom: 40px; }
+
