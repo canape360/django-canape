@@ -1,0 +1,20 @@
+<!-- diaryapp/templates/diaryapp/diary_list.html -->
+ {% extends "base.html" %}
+{% block content %}
+<h1>日記一覧</h1>
+
+<p><a href="{% url 'diaryapp:create' %}">＋ 新規作成</a></p>
+
+{% if diaries %}
+  <ul>
+    {% for d in diaries %}
+      <li>
+        <a href="{% url 'diaryapp:detail' d.pk %}">{{ d.title }}</a>
+        （{{ d.created_at|date:"Y-m-d H:i" }}）
+      </li>
+    {% endfor %}
+  </ul>
+{% else %}
+  <p>まだ日記がありません。</p>
+{% endif %}
+{% endblock %}

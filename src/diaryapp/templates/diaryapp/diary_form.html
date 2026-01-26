@@ -1,0 +1,13 @@
+<!-- iaryapp/templates/diaryapp/diary_form.html -->
+ {% extends "base.html" %}
+{% block content %}
+<h1>{% if object %}日記編集{% else %}日記作成{% endif %}</h1>
+
+<form method="post">
+  {% csrf_token %}
+  {{ form.as_p }}
+  <button type="submit">保存</button>
+</form>
+
+<p><a href="{% url 'diaryapp:list' %}">一覧へ</a></p>
+{% endblock %}

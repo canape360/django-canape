@@ -1,0 +1,34 @@
+ <!--templates/base.html-->
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <title>Django Canape</title>
+</head>
+<body>
+  <nav style="display:flex; gap:12px; align-items:center;">
+    <a href="/">Home</a>
+    <a href="/about/">About</a>
+
+    <a href="{% url 'diaryapp:list' %}">Diary</a>
+    <a href="{% url 'diaryapp:public_list' %}">Public Diary</a>
+
+    <a href="/myapp/">MyApp</a>
+
+    <span style="margin-left:auto;">
+      {% if user.is_authenticated %}
+        {{ user.username }} |
+        <form action="{% url 'logout' %}" method="post" style="display:inline; margin:0;">
+          {% csrf_token %}
+          <button type="submit" style="cursor:pointer;">Logout</button>
+        </form>
+      {% else %}
+        <a href="{% url 'login' %}">Login</a>
+      {% endif %}
+    </span>
+  </nav>
+
+  <hr>
+  {% block content %}{% endblock %}
+</body>
+</html>
