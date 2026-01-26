@@ -22,6 +22,23 @@ def dbcheck(request):
     })
 
 
+def migcheck(request):
+    with connection.cursor() as cursor:
+        cursor.execute("""
+            SELECT app, name, applied
+            FROM django_migrations
+            WHERE app = 'myapp'
+            ORDER BY applied;
+        """)
+        rows = cursor.fetchall()
+
+    return JsonResponse({
+        "myapp_migrations": [
+            {"app": r[0], "name": r[1], "applied": str(r[2])} for r in rows
+        ]
+    })
+
+
 def list_debug(request):
     try:
         return views.myappListView(request)
@@ -34,15 +51,16 @@ urlpatterns = [
     # 疎通確認
     path("health/", health, name="health"),
     path("dbcheck/", dbcheck, name="dbcheck"),
+    path("migcheck/", migcheck, name="migcheck"),
 
-    # ★ これが無かった（超重要）
+    # list の例外を traceback で見せる（本番公開中は注意）
     path("list-debug/", list_debug, name="list_debug"),
 
     # /myapp/ の入口
     path("", views.person_list, name="root"),
     path("person_list/", views.person_list, name="person_list"),
 
-    # MyApp CRUD
+    # CRUD
     path("list/", views.myappListView, name="list"),
     path("detail/", views.myapp_detail_latest, name="detail_latest"),
     path("detail/<int:pk>/", views.myappDetailView, name="detail"),
