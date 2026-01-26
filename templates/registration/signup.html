@@ -1,20 +1,19 @@
-<!DOCTYPE html>
-<html lang="ja">
-<head>
-    <meta charset="UTF-8">
-    <title>ユーザー登録</title>
-</head>
-<body>
-    <h1>ユーザー登録</h1>
+{% extends "base.html" %}
+{% block content %}
+<h1>ユーザー登録</h1>
 
-    <form method="post">
-        {% csrf_token %}
-        {{ form.as_p }}
-        <button type="submit">登録</button>
-    </form>
+{% if form.errors %}
+  <div style="padding:10px; background:#fee; border:1px solid #f99;">
+    <p><strong>入力エラーがあります：</strong></p>
+    {{ form.errors }}
+  </div>
+{% endif %}
 
-    <p>
-        <a href="{% url 'login' %}">ログインはこちら</a>
-    </p>
-</body>
-</html>
+<form method="post">
+  {% csrf_token %}
+  {{ form.as_p }}
+  <button type="submit">登録</button>
+</form>
+
+<p><a href="{% url 'login' %}">ログインはこちら</a></p>
+{% endblock %}
