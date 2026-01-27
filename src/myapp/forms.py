@@ -8,13 +8,13 @@ from .models import MyApp, MyMail
 class MyAppForm(forms.ModelForm):
     class Meta:
         model = MyApp
-        fields = ["title", "content"]  # ← __all__ は避ける
+        fields = ["title", "body"]  # ★ content → body
         widgets = {
             "title": forms.TextInput(attrs={
                 "class": "form-control",
                 "placeholder": "タイトルを入力",
             }),
-            "content": forms.Textarea(attrs={
+            "body": forms.Textarea(attrs={  # ★ content → body
                 "class": "form-control",
                 "rows": 12,
                 "placeholder": "日記の内容を入力してください",
