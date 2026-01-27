@@ -78,6 +78,20 @@ def detail_latest_debug(request):
     except Exception:
         tb = traceback.format_exc()
         return HttpResponse(f"<pre>{tb}</pre>", status=500)
+def diary_schema(request):
+    with connection.cursor() as cursor:
+        cursor.execute("""
+            SELECT column_name, data_type, is_nullable
+            FROM information_schema.columns
+            WHERE table_name = 'myapp_diary'
+            ORDER BY ordinal_position;
+        """)
+        cols = cursor.fetchall()
+
+    return JsonResponse({
+        "table": "myapp_diary",
+        "columns": [{"name": c[0], "type": c[1], "nullable": c[2]} for c in cols]
+    })
 
 
 urlpatterns = [
@@ -110,6 +124,9 @@ urlpatterns = [
     # signup / dashboard
     path("signup/", views.signup_view, name="signup"),
     path("dashboard/", views.user_dashboard, name="dashboard"),
+
+    path("diary-schema/", diary_schema, name="diary_schema"),
+
 ]
 
 # django-canape/src/myapp/urls.py
