@@ -57,26 +57,29 @@ def myappCreateView(request):
         form = MyAppForm(request.POST)
         if form.is_valid():
             obj = form.save(commit=False)
-            obj.author = request.user  # author は null可だが入れておくと安定
+            obj.user = request.user  # ★ author ではなく user
             obj.save()
             return redirect("myapp:detail", pk=obj.pk)
     else:
         form = MyAppForm()
+
     return render(request, "myapp/myapp_form.html", {"form": form})
 
 
 @login_required
 def myappUpdateView(request, pk):
     obj = get_object_or_404(MyApp, pk=pk)
+
     if request.method == "POST":
         form = MyAppForm(request.POST, instance=obj)
         if form.is_valid():
             updated = form.save(commit=False)
-            updated.author = request.user
+            updated.user = request.user  # ★ author ではなく user
             updated.save()
             return redirect("myapp:detail", pk=obj.pk)
     else:
         form = MyAppForm(instance=obj)
+
     return render(request, "myapp/myapp_update.html", {"form": form, "object": obj})
 
 
@@ -115,10 +118,11 @@ def mymail_list(request):
         if search:
             objects = objects.filter(subject__icontains=search)
 
-    return render(request, "myapp/mymail_list.html", {
-        "object_list": objects,
-        "search_form": search_form,
-    })
+    return render(
+        request,
+        "myapp/mymail_list.html",
+        {"object_list": objects, "search_form": search_form},
+    )
 
 
 # =========================
@@ -133,4 +137,5 @@ def signup_view(request):
             return redirect("myapp:person_list")
     else:
         form = UserCreationForm()
+
     return render(request, "registration/signup.html", {"form": form})
