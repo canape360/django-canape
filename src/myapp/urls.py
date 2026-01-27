@@ -2,12 +2,15 @@ import os
 import traceback
 
 from django.urls import path
-from django.http import HttpResponse, JsonResponse
+from django.http import HttpResponse, JsonResponse, HttpResponseForbidden
 from django.db import connection
 
 from . import views
 
 app_name = "myapp"
+
+# Render / 本番でだけ debug を出すかどうかを環境変数で制御（Renderの環境変数で ON にできる）
+DEBUG_ENDPOINTS = os.environ.get("DEBUG_ENDPOINTS", "0") == "1"
 
 
 def health(request):
@@ -39,9 +42,39 @@ def migcheck(request):
     })
 
 
+def _debug_guard(request):
+    # 本番公開中は危険なので、環境変数がONのときだけ許可
+    if not DEBUG_ENDPOINTS:
+        return False
+    # さらに安全にするならログイン必須や staff 限定にする（必要ならここで追加）
+    return True
+
+
 def list_debug(request):
+    if not _debug_guard(request):
+        return HttpResponseForbidden("debug endpoint disabled")
     try:
         return views.myappListView(request)
+    except Exception:
+        tb = traceback.format_exc()
+        return HttpResponse(f"<pre>{tb}</pre>", status=500)
+
+
+def form_debug(request):
+    if not _debug_guard(request):
+        return HttpResponseForbidden("debug endpoint disabled")
+    try:
+        return views.myappCreateView(request)
+    except Exception:
+        tb = traceback.format_exc()
+        return HttpResponse(f"<pre>{tb}</pre>", status=500)
+
+
+def detail_latest_debug(request):
+    if not _debug_guard(request):
+        return HttpResponseForbidden("debug endpoint disabled")
+    try:
+        return views.myapp_detail_latest(request)
     except Exception:
         tb = traceback.format_exc()
         return HttpResponse(f"<pre>{tb}</pre>", status=500)
@@ -53,8 +86,10 @@ urlpatterns = [
     path("dbcheck/", dbcheck, name="dbcheck"),
     path("migcheck/", migcheck, name="migcheck"),
 
-    # list の例外を traceback で見せる（本番公開中は注意）
+    # debug（本番公開中は DEBUG_ENDPOINTS=1 の時だけ有効）
     path("list-debug/", list_debug, name="list_debug"),
+    path("form-debug/", form_debug, name="form_debug"),
+    path("detail-latest-debug/", detail_latest_debug, name="detail_latest_debug"),
 
     # /myapp/ の入口
     path("", views.person_list, name="root"),
@@ -76,3 +111,5 @@ urlpatterns = [
     path("signup/", views.signup_view, name="signup"),
     path("dashboard/", views.user_dashboard, name="dashboard"),
 ]
+
+# django-canape/src/myapp/urls.py
