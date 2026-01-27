@@ -11,6 +11,26 @@ app_name = "myapp"
 
 # Render / 本番でだけ debug を出すかどうかを環境変数で制御（Renderの環境変数で ON にできる）
 DEBUG_ENDPOINTS = os.environ.get("DEBUG_ENDPOINTS", "0") == "1"
+# urls.py（DEBUG_ENDPOINTS=1のときだけ有効にしている前提）
+
+def table_schema(request, table):
+    if not _debug_guard(request):
+        return HttpResponseForbidden("debug endpoint disabled")
+
+    with connection.cursor() as cursor:
+        cursor.execute("""
+            SELECT column_name, data_type, is_nullable
+            FROM information_schema.columns
+            WHERE table_name = %s
+            ORDER BY ordinal_position;
+        """, [table])
+        rows = cursor.fetchall()
+
+    return JsonResponse({
+        "table": table,
+        "columns": [{"name": r[0], "type": r[1], "nullable": r[2]} for r in rows],
+    })
+
 
 
 def health(request):
@@ -126,6 +146,7 @@ urlpatterns = [
     path("dashboard/", views.user_dashboard, name="dashboard"),
 
     path("diary-schema/", diary_schema, name="diary_schema"),
+    path("table-schema/<str:table>/", table_schema, name="table_schema"),
 
 ]
 
