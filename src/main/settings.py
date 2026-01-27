@@ -1,10 +1,12 @@
 from pathlib import Path
 import os
+
 import dj_database_url
 from dotenv import load_dotenv
 
 # ========================
-# .env を読み込む
+# .env を読み込む（ローカル向け）
+# Render では Environment が優先されるので安全
 # ========================
 load_dotenv()
 
@@ -18,18 +20,27 @@ BASE_DIR = Path(__file__).resolve().parent.parent  # => .../repo/src
 # Secret & Debug
 # ========================
 SECRET_KEY = os.environ.get("SECRET_KEY", "fallback-secret-key")
-DEBUG = os.getenv("DJANGO_DEBUG", "False") == "True"
+
+# Render/ローカル共通で DEBUG を見れるように統一（DEBUG=True/False）
+DEBUG = os.environ.get("DEBUG", "False").lower() == "true"
 
 # ========================
 # Allowed Hosts
+# 本番は * を避ける（セキュリティ）
 # ========================
-ALLOWED_HOSTS = ["*"]
+ALLOWED_HOSTS = [
+    "django-canape-s664.onrender.com",
+    "127.0.0.1",
+    "localhost",
+]
+
+# Render でカスタムドメインを使うならここに追加
 
 # ========================
-# Login URLs
+# Login URLs（重複定義を排除）
 # ========================
 LOGIN_URL = "/accounts/login/"
-LOGIN_REDIRECT_URL = "myapp:person_list"
+LOGIN_REDIRECT_URL = "/diary/"
 LOGOUT_REDIRECT_URL = "/"
 
 # ========================
@@ -45,7 +56,7 @@ INSTALLED_APPS = [
 
     # AppConfig を明示指定（ready() を有効化）
     "myapp.apps.MyappConfig",
-     "diaryapp",
+    "diaryapp",
 ]
 
 # ========================
@@ -87,17 +98,23 @@ WSGI_APPLICATION = "main.wsgi.application"
 
 # ========================
 # Database
+# Render は DATABASE_URL（Postgres）を設定するのが基本
+# ローカルで未設定なら sqlite を使う
 # ========================
-default_db_url = os.environ.get("DATABASE_URL", f"sqlite:///{BASE_DIR / 'db.sqlite3'}")
+DATABASE_URL = os.environ.get("DATABASE_URL")
 
-if default_db_url.startswith("sqlite"):
-    DATABASES = {"default": dj_database_url.parse(default_db_url)}
+if DATABASE_URL:
+    DATABASES = {
+        "default": dj_database_url.config(
+            default=DATABASE_URL,
+            conn_max_age=600,
+            ssl_require=True,  # Render Postgres想定
+        )
+    }
 else:
     DATABASES = {
         "default": dj_database_url.config(
-            default=default_db_url,
-            conn_max_age=600,
-            ssl_require=True,
+            default=f"sqlite:///{BASE_DIR / 'db.sqlite3'}"
         )
     }
 
@@ -125,10 +142,9 @@ USE_TZ = True
 STATIC_URL = "/static/"
 STATIC_ROOT = BASE_DIR / "staticfiles"
 
-# ✅ ここだけ：src/static を「固定」で拾う（動的候補探索はしない）
+# src/static を拾う
 STATICFILES_DIRS = [BASE_DIR / "static"]
 
-# WhiteNoise の圧縮＋ハッシュ付き静的ファイル
 STORAGES = {
     "staticfiles": {
         "BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage",
@@ -146,8 +162,24 @@ MEDIA_ROOT = BASE_DIR / "media"
 # ========================
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
-
-LOGIN_REDIRECT_URL = "/diary/"
-LOGOUT_REDIRECT_URL = "/"
-LOGIN_URL = "/accounts/login/"
-
+# ========================
+# Logging（Render logs に 500 の原因を出しやすくする）
+# ========================
+LOGGING = {
+    "version": 1,
+    "disable_existing_loggers": False,
+    "handlers": {
+        "console": {"class": "logging.StreamHandler"},
+    },
+    "root": {
+        "handlers": ["console"],
+        "level": "INFO",
+    },
+    "loggers": {
+        "django.request": {
+            "handlers": ["console"],
+            "level": "ERROR",
+            "propagate": False,
+        },
+    },
+}
