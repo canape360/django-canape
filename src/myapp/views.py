@@ -19,6 +19,9 @@ class AboutView(TemplateView):
     template_name = "about.html"
 
 
+# =========================
+# Person
+# =========================
 @login_required
 def person_list(request):
     persons = Person.objects.all()
@@ -53,7 +56,9 @@ def myappCreateView(request):
     if request.method == "POST":
         form = MyAppForm(request.POST)
         if form.is_valid():
-            obj = form.save()
+            obj = form.save(commit=False)
+            obj.author = request.user  # author は null可だが入れておくと安定
+            obj.save()
             return redirect("myapp:detail", pk=obj.pk)
     else:
         form = MyAppForm()
@@ -66,7 +71,9 @@ def myappUpdateView(request, pk):
     if request.method == "POST":
         form = MyAppForm(request.POST, instance=obj)
         if form.is_valid():
-            form.save()
+            updated = form.save(commit=False)
+            updated.author = request.user
+            updated.save()
             return redirect("myapp:detail", pk=obj.pk)
     else:
         form = MyAppForm(instance=obj)
@@ -114,6 +121,9 @@ def mymail_list(request):
     })
 
 
+# =========================
+# Signup
+# =========================
 def signup_view(request):
     if request.method == "POST":
         form = UserCreationForm(request.POST)
