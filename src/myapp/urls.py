@@ -128,6 +128,9 @@ urlpatterns = [
     # /myapp/ の入口
     path("", views.person_list, name="root"),
     path("person_list/", views.person_list, name="person_list"),
+    path("person/<int:pk>/", views.person_detail, name="person_detail"),
+
+    
 
     # CRUD
     path("list/", views.myappListView, name="list"),

@@ -17,8 +17,6 @@ def user_dashboard(request):
 
 class AboutView(TemplateView):
     template_name = "about.html"
-
-
 # =========================
 # Person
 # =========================
@@ -27,6 +25,11 @@ def person_list(request):
     persons = Person.objects.all()
     return render(request, "myapp/person_list.html", {"persons": persons})
 
+
+@login_required
+def person_detail(request, pk):
+    person = get_object_or_404(Person, pk=pk)
+    return render(request, "myapp/person_detail.html", {"person": person})
 
 # =========================
 # MyApp（CRUD）
@@ -57,12 +60,15 @@ def myappCreateView(request):
         form = MyAppForm(request.POST)
         if form.is_valid():
             obj = form.save(commit=False)
-            obj.user = request.user  # ★ author ではなく user
+            obj.user = request.user  # ✅ user に統一
             obj.save()
             return redirect("myapp:detail", pk=obj.pk)
-    else:
-        form = MyAppForm()
 
+        # ✅ バリデーションエラーがある場合は、そのままエラー付きで返す
+        return render(request, "myapp/myapp_form.html", {"form": form})
+
+    # GET
+    form = MyAppForm()
     return render(request, "myapp/myapp_form.html", {"form": form})
 
 
@@ -74,12 +80,15 @@ def myappUpdateView(request, pk):
         form = MyAppForm(request.POST, instance=obj)
         if form.is_valid():
             updated = form.save(commit=False)
-            updated.user = request.user  # ★ author ではなく user
+            updated.user = request.user  # ✅ user に統一
             updated.save()
-            return redirect("myapp:detail", pk=obj.pk)
-    else:
-        form = MyAppForm(instance=obj)
+            return redirect("myapp:detail", pk=updated.pk)
 
+        # ✅ エラー付きで返す
+        return render(request, "myapp/myapp_update.html", {"form": form, "object": obj})
+
+    # GET
+    form = MyAppForm(instance=obj)
     return render(request, "myapp/myapp_update.html", {"form": form, "object": obj})
 
 
@@ -103,8 +112,11 @@ def mymailCreateView(request):
             form.save()
             messages.success(request, "メールを送信しました")
             return redirect("myapp:mymail_list")
-    else:
-        form = MyMailForm()
+
+        # ✅ エラー付きで返す
+        return render(request, "myapp/mymail-form.html", {"form": form})
+
+    form = MyMailForm()
     return render(request, "myapp/mymail-form.html", {"form": form})
 
 
@@ -135,7 +147,8 @@ def signup_view(request):
             user = form.save()
             login(request, user)
             return redirect("myapp:person_list")
-    else:
-        form = UserCreationForm()
+        # ✅ エラー付きで返す
+        return render(request, "registration/signup.html", {"form": form})
 
+    form = UserCreationForm()
     return render(request, "registration/signup.html", {"form": form})

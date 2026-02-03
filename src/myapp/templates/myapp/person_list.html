@@ -6,17 +6,20 @@
 
 <p>人物リスト</p>
 
-{% spaceless %}
-<ul>{% for person in persons %}
-<li>
-  {{ person.name }} ({{ person.age }}才)<br>
-  Email: {{ person.email }}<br>
-  Phone: {{ person.phone }}<br>
-  Address: {{ person.address }}
-</li>{% empty %}
-<li>人物データがありません</li>{% endfor %}</ul>
-{% endspaceless %}
+<ul>
+  {% for person in persons %}
+    <li>
+      {{ person.name }} ({{ person.age }}才)<br>
+      Email: {{ person.email }}<br>
+      Phone: {{ person.phone }}<br>
+      Address: {{ person.address }}<br>
 
+      <a href="{% url 'myapp:person_detail' pk=person.pk %}">詳細</a>
+    </li>
+  {% empty %}
+    <li>人物データがありません</li>
+  {% endfor %}
+</ul>
 
 <p><a href="{% url 'myapp:list' %}">日記アプリ</a></p>
 

@@ -2,12 +2,13 @@
 {% load static %}
 <!doctype html>
 <html lang="ja">
+{% load static %}
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>{% block title %}My Django App{% endblock %}</title>
 
-  <link rel="icon" href="/static/hana.ico">
+  <link rel="icon" href="{% static 'cat.ico' %}">
   <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP&display=swap" rel="stylesheet">
 
   <!-- CSSは head の中に1回だけ -->
