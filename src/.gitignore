@@ -14,3 +14,4 @@ vercel.json
 !static/
 !static/css/
 !static/css/index.css
+_backup_migrations_myapp/
