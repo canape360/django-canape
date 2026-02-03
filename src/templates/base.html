@@ -5,7 +5,11 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>{% block title %}Django Canape{% endblock %}</title>
+
   <link rel="stylesheet" href="{% static 'css/index.css' %}">
+  <link rel="icon" href="{% static 'cat.ico' %}">
+  {# ページ固有CSSを追加できるように #}
+  {% block extra_head %}{% endblock %}
 </head>
 <body>
 
@@ -18,7 +22,8 @@
 
   <span class="app-navbar-right">
     {% if user.is_authenticated %}
-      {{ user.username }} |
+      <span class="nav-user">{{ user.username }}</span>
+      <span class="nav-sep">|</span>
       <form action="{% url 'logout' %}" method="post" class="logout-form">
         {% csrf_token %}
         <button type="submit" class="logout-button">Logout</button>
@@ -30,11 +35,18 @@
   </span>
 </nav>
 
-<hr>
+<main class="app-main">
+  {% if messages %}
+    <div class="flash-wrap">
+      {% for message in messages %}
+        <div class="flash {{ message.tags }}">{{ message }}</div>
+      {% endfor %}
+    </div>
+  {% endif %}
 
-<main>
   {% block content %}{% endblock %}
 </main>
 
+{% block extra_js %}{% endblock %}
 </body>
 </html>

@@ -3,55 +3,37 @@
 {% block title %}MyMail Form{% endblock %}
 
 {% block content %}
-<!-- <header>
-  <nav class="navbar navbar-dark bg-primary">
-    <!-- Add your navigation links here --
-    &emsp;<a href="{% url 'myapp:list' %}">Home</a> |
-    <a href=" /myapp/myapp ">日記情報</a> |
-    <a href=" /myapp/detail/13/ "> 詳しい情報</a> |
-    
-    <a href=" /admin/ ">管理サイト</a>   |
-    <a href="{% url 'myapp:mymail_list' %}">メール履歴検索</a>   |
-   
-  </nav>
-</header> -->
 <div class="container">
-<h1>ご連絡</h1>
+  <h1>ご連絡</h1>
 
-<!-- フォームを表示 -->
-<form method="post" action="{% url 'myapp:mymail' %}"></form>
-  {% csrf_token %}
-  <div class="mb-3">
-  <!-- 件名 -->
-  <label for="{{ form.subject.id_for_label }}">件名:</label>
-  {{ form.subject }}
-</div>
-<div class="mb-3">
-  <!-- メッセージ -->
-  <label for="{{ form.message.id_for_label }}">メッセージ:</label>
-  {{ form.message }}
-</div> 
-<div class="mb-4">
-  <!-- 送信者 -->
-  <label for="{{ form.sender.id_for_label }}">送信者メールアドレス:</label>
-  {{ form.sender }}
-</div>
-<div class="mb-2">
-  <!-- 新しい検索フィールド -->
-  <!-- <label for="{{ form.search.id_for_label }}">検索:</label> -->
-  {% comment %}
-  {{ form.search }}{% endcomit %}
-{% endcomment %}
-  </div>
-  <button type="submit">送信</button>
-</form>
-</div>
-{% if form.is_valid %}
-  <!-- フォームが正常に送信された場合のメッセージ -->
-  <p>Form submitted successfully!</p>
-  <!-- 成功後のリダイレクトリンク -->
-  <p><a href="{% url 'myapp:mymail_form' %}">Return to MyMail Form</a></p>
-  <p><a href="/admin/myapp/mymail/">MyMail 管理画面</a></p>
-{% endif %}
+  {# フォーム表示＆送信：/myapp/mymail/ #}
+  <form method="post" action="{% url 'myapp:mymail' %}">
+    {% csrf_token %}
 
+    <div class="mb-3">
+      <label for="{{ form.subject.id_for_label }}">件名:</label>
+      {{ form.subject }}
+    </div>
+
+    <div class="mb-3">
+      <label for="{{ form.message.id_for_label }}">メッセージ:</label>
+      {{ form.message }}
+    </div>
+
+    <div class="mb-4">
+      <label for="{{ form.sender.id_for_label }}">送信者メールアドレス:</label>
+      {{ form.sender }}
+    </div>
+
+    <button type="submit" class="btn btn-primary">送信</button>
+  </form>
+
+  <hr>
+
+  <p>
+    <a href="{% url 'myapp:mymail_list' %}">📨 メール履歴検索</a>
+    |
+    <a href="{% url 'myapp:list' %}">📘 日記一覧へ戻る</a>
+  </p>
+</div>
 {% endblock %}

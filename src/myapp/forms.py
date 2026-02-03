@@ -1,14 +1,13 @@
 from django import forms
 from .models import MyApp, MyMail
 
-
 # =========================
 # MyApp 用フォーム（日記）
 # =========================
 class MyAppForm(forms.ModelForm):
     class Meta:
         model = MyApp
-        fields = ["title", "body"]  # content ではなく body
+        fields = ["title", "body"]
         widgets = {
             "title": forms.TextInput(
                 attrs={
@@ -24,7 +23,6 @@ class MyAppForm(forms.ModelForm):
                 }
             ),
         }
-
 
 # =========================
 # MyMail 用フォーム（保存）
@@ -54,7 +52,6 @@ class MyMailForm(forms.ModelForm):
                 }
             ),
         }
-
 
 # =========================
 # MyMail 用フォーム（検索専用）

@@ -1,20 +1,21 @@
-<!DOCTYPE html>
-<html lang="ja">
-<head>
-  <meta charset="utf-8">
-  <title>Login</title>
-</head>
-<body>
-  <h1>Login</h1>
+{% extends "base.html" %}
 
-  {% if form.errors %}
-    <p style="color:red;">入力に誤りがあります。</p>
-  {% endif %}
+{% block title %}ログイン | Django Canape{% endblock %}
 
-  <form method="post">
-    {% csrf_token %}
-    {{ form.as_p }}
-    <button type="submit">ログイン</button>
-  </form>
-</body>
-</html>
+{% block content %}
+<div class="auth-wrap">
+  <div class="auth-card">
+    <h1 class="auth-title">ログイン</h1>
+
+    <form method="post" class="auth-form">
+      {% csrf_token %}
+      {{ form.as_p }}
+      <button type="submit" class="auth-button">ログイン</button>
+    </form>
+
+    {% if request.GET.next %}
+      <div class="auth-note">ログイン後に元のページへ戻ります</div>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}
