@@ -152,3 +152,12 @@ def signup_view(request):
 
     form = UserCreationForm()
     return render(request, "registration/signup.html", {"form": form})
+
+
+
+def top(request):
+    context = {
+        "title": "ようこそ",
+        "message": "これは一般ユーザー向けの画面です。",
+    }
+    return render(request, "myapp/top.html", context)
