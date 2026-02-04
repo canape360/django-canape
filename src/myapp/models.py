@@ -4,7 +4,7 @@ from django.conf import settings
 
 class Person(models.Model):
     class Meta:
-        db_table = "myapp_person"   # ★ここだけ変更
+        db_table = "person"   # ★ここだけ変更
         managed = False
 
     name = models.CharField(max_length=255)
