@@ -1,3 +1,4 @@
+# django-canape/src/myapp/urls.py
 import os
 import traceback
 
@@ -9,67 +10,20 @@ from . import views
 
 app_name = "myapp"
 
-# Render / 本番でだけ debug を出すかどうかを環境変数で制御（Renderの環境変数で ON にできる）
+# Render / 本番でだけ debug を出すかどうかを環境変数で制御
 DEBUG_ENDPOINTS = os.environ.get("DEBUG_ENDPOINTS", "0") == "1"
-# urls.py（DEBUG_ENDPOINTS=1のときだけ有効にしている前提）
-
-def table_schema(request, table):
-    if not _debug_guard(request):
-        return HttpResponseForbidden("debug endpoint disabled")
-
-    with connection.cursor() as cursor:
-        cursor.execute("""
-            SELECT column_name, data_type, is_nullable
-            FROM information_schema.columns
-            WHERE table_name = %s
-            ORDER BY ordinal_position;
-        """, [table])
-        rows = cursor.fetchall()
-
-    return JsonResponse({
-        "table": table,
-        "columns": [{"name": r[0], "type": r[1], "nullable": r[2]} for r in rows],
-    })
-
-
-
-def health(request):
-    commit = os.environ.get("RENDER_GIT_COMMIT", "unknown")
-    return HttpResponse(f"ok commit={commit}")
-
-
-def dbcheck(request):
-    return JsonResponse({
-        "vendor": connection.vendor,
-        "tables": connection.introspection.table_names(),
-    })
-
-
-def migcheck(request):
-    with connection.cursor() as cursor:
-        cursor.execute("""
-            SELECT app, name, applied
-            FROM django_migrations
-            WHERE app = 'myapp'
-            ORDER BY applied;
-        """)
-        rows = cursor.fetchall()
-
-    return JsonResponse({
-        "myapp_migrations": [
-            {"app": r[0], "name": r[1], "applied": str(r[2])} for r in rows
-        ]
-    })
 
 
 def _debug_guard(request):
     # 本番公開中は危険なので、環境変数がONのときだけ許可
     if not DEBUG_ENDPOINTS:
         return False
-    # さらに安全にするならログイン必須や staff 限定にする（必要ならここで追加）
+    # さらに安全にするなら staff 限定（必要ならON）
+    # return request.user.is_authenticated and request.user.is_staff
     return True
 
 
+# ===== debug helpers =====
 def list_debug(request):
     if not _debug_guard(request):
         return HttpResponseForbidden("debug endpoint disabled")
@@ -98,41 +52,116 @@ def detail_latest_debug(request):
     except Exception:
         tb = traceback.format_exc()
         return HttpResponse(f"<pre>{tb}</pre>", status=500)
+
+
+# ===== schema endpoints =====
 def diary_schema(request):
+    # ここは現状のまま（危険なら _debug_guard を付けてOK）
     with connection.cursor() as cursor:
-        cursor.execute("""
+        cursor.execute(
+            """
             SELECT column_name, data_type, is_nullable
             FROM information_schema.columns
             WHERE table_name = 'myapp_diary'
             ORDER BY ordinal_position;
-        """)
+            """
+        )
         cols = cursor.fetchall()
 
-    return JsonResponse({
-        "table": "myapp_diary",
-        "columns": [{"name": c[0], "type": c[1], "nullable": c[2]} for c in cols]
-    })
+    return JsonResponse(
+        {
+            "table": "myapp_diary",
+            "columns": [{"name": c[0], "type": c[1], "nullable": c[2]} for c in cols],
+        }
+    )
+
+
+def table_schema(request, table: str):
+    if not _debug_guard(request):
+        return HttpResponseForbidden("debug endpoint disabled")
+
+    with connection.cursor() as cursor:
+        cursor.execute(
+            """
+            SELECT column_name, data_type, is_nullable
+            FROM information_schema.columns
+            WHERE table_name = %s
+            ORDER BY ordinal_position;
+            """,
+            [table],
+        )
+        rows = cursor.fetchall()
+
+    return JsonResponse(
+        {
+            "table": table,
+            "columns": [{"name": r[0], "type": r[1], "nullable": r[2]} for r in rows],
+        }
+    )
+
+
+# ===== health checks =====
+def health(request):
+    commit = os.environ.get("RENDER_GIT_COMMIT", "unknown")
+    return HttpResponse(f"ok commit={commit}")
+
+
+def dbcheck(request):
+    return JsonResponse(
+        {
+            "vendor": connection.vendor,
+            "tables": connection.introspection.table_names(),
+        }
+    )
+
+
+def migcheck(request):
+    with connection.cursor() as cursor:
+        cursor.execute(
+            """
+            SELECT app, name, applied
+            FROM django_migrations
+            WHERE app = 'myapp'
+            ORDER BY applied;
+            """
+        )
+        rows = cursor.fetchall()
+
+    return JsonResponse(
+        {
+            "myapp_migrations": [
+                {"app": r[0], "name": r[1], "applied": str(r[2])} for r in rows
+            ]
+        }
+    )
 
 
 urlpatterns = [
-    # 疎通確認
+    # ---- 疎通確認 ----
     path("health/", health, name="health"),
     path("dbcheck/", dbcheck, name="dbcheck"),
     path("migcheck/", migcheck, name="migcheck"),
 
-    # debug（本番公開中は DEBUG_ENDPOINTS=1 の時だけ有効）
+    # ---- debug（本番公開中は DEBUG_ENDPOINTS=1 の時だけ有効）----
     path("list-debug/", list_debug, name="list_debug"),
     path("form-debug/", form_debug, name="form_debug"),
     path("detail-latest-debug/", detail_latest_debug, name="detail_latest_debug"),
 
-    # /myapp/ の入口
+    # ---- schema ----
+    path("diary-schema/", diary_schema, name="diary_schema"),
+    path("table-schema/<str:table>/", table_schema, name="table_schema"),
+
+    # ---- 一般ユーザー向けトップ（base.html対応）----
+    path("top/", views.top, name="top"),
+
+    # ---- /myapp/ の入口：現状維持（壊さない）----
     path("", views.person_list, name="root"),
+
+    # ---- 人物情報 ----
     path("person_list/", views.person_list, name="person_list"),
     path("person/<int:pk>/", views.person_detail, name="person_detail"),
 
-    
-
-    # CRUD
+    # ---- CRUD ----
     path("list/", views.myappListView, name="list"),
     path("detail/", views.myapp_detail_latest, name="detail_latest"),
     path("detail/<int:pk>/", views.myappDetailView, name="detail"),
@@ -140,17 +169,11 @@ urlpatterns = [
     path("update/<int:pk>/", views.myappUpdateView, name="update"),
     path("delete/<int:pk>/", views.myappDeleteView, name="delete"),
 
-    # MyMail
+    # ---- MyMail ----
     path("mymail/", views.mymailCreateView, name="mymail"),
     path("mymail_list/", views.mymail_list, name="mymail_list"),
 
-    # signup / dashboard
+    # ---- signup / dashboard ----
     path("signup/", views.signup_view, name="signup"),
     path("dashboard/", views.user_dashboard, name="dashboard"),
-
-    path("diary-schema/", diary_schema, name="diary_schema"),
-    path("table-schema/<str:table>/", table_schema, name="table_schema"),
-
 ]
-
-# django-canape/src/myapp/urls.py
