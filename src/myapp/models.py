@@ -1,6 +1,6 @@
 from django.db import models
 from django.conf import settings
-from django.utils import timezone  # ← ここに置く（重要）
+from django.utils import timezone
 
 
 class Person(models.Model):
@@ -20,17 +20,17 @@ class Person(models.Model):
 
 class MyApp(models.Model):
     class Meta:
-        db_table = "myapp_diary"
+        # ✅ Supabaseに実在するテーブル名に合わせる（重要）
+        # あなたのSupabase一覧に myapp_myapp があったのでこちらが正解のはず
+        db_table = "myapp_myapp"
         managed = False
 
     title = models.CharField(max_length=100)
     body = models.TextField(db_column="body")
 
-    # ✅ ここがクラス内にあることが重要
-    created_at = models.DateTimeField(
-        db_column="created_at",
-        default=timezone.now,   # NULL防止
-    )
+    # ✅ DBが NOT NULL でも落ちないようにデフォルトを付与
+    # 既存行にNULLがあり得るDBなら、null=Trueにする（ただしDB制約がNOT NULLなら意味なし）
+    created_at = models.DateTimeField(db_column="created_at", default=timezone.now)
 
     user = models.ForeignKey(
         settings.AUTH_USER_MODEL,
