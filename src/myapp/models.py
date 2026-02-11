@@ -1,10 +1,11 @@
 from django.db import models
 from django.conf import settings
+from django.utils import timezone  # ← ここに置く（重要）
 
 
 class Person(models.Model):
     class Meta:
-        db_table = "person"   # ★ここだけ変更
+        db_table = "person"
         managed = False
 
     name = models.CharField(max_length=255)
@@ -24,7 +25,12 @@ class MyApp(models.Model):
 
     title = models.CharField(max_length=100)
     body = models.TextField(db_column="body")
-    created_at = models.DateTimeField(db_column="created_at")
+
+    # ✅ ここがクラス内にあることが重要
+    created_at = models.DateTimeField(
+        db_column="created_at",
+        default=timezone.now,   # NULL防止
+    )
 
     user = models.ForeignKey(
         settings.AUTH_USER_MODEL,
