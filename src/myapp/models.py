@@ -4,6 +4,9 @@ from django.utils import timezone
 
 
 class Person(models.Model):
+    """
+    Supabase: person テーブル
+    """
     class Meta:
         db_table = "person"
         managed = False
@@ -19,42 +22,49 @@ class Person(models.Model):
 
 
 class MyApp(models.Model):
+    """
+    Supabase: myapp_myapp テーブル
+    columns:
+      - id (bigint)
+      - title (varchar)
+      - content (varchar)  ← 本文
+      - author_id (int)    ← ユーザー
+      - created_at (timestamptz)
+    """
     class Meta:
-        # ✅ Supabaseに実在するテーブル名に合わせる（重要）
-        # あなたのSupabase一覧に myapp_myapp があったのでこちらが正解のはず
         db_table = "myapp_myapp"
         managed = False
 
     title = models.CharField(max_length=100)
-    body = models.TextField(db_column="body")
 
-    # ✅ DBが NOT NULL でも落ちないようにデフォルトを付与
-    # 既存行にNULLがあり得るDBなら、null=Trueにする（ただしDB制約がNOT NULLなら意味なし）
+    # ✅ DB列は content(varchar) なので db_column="content"
+    # 文字数制限があるはずなので CharField が安全
+    # ※必要なら max_length を増やしてください（DB側の制限に合わせる）
+    body = models.CharField(db_column="content", max_length=2000)
+
     created_at = models.DateTimeField(db_column="created_at", default=timezone.now)
 
+    # ✅ DB列は author_id（user_id ではない）
     user = models.ForeignKey(
         settings.AUTH_USER_MODEL,
         on_delete=models.SET_NULL,
         null=True,
         blank=True,
-        db_column="user_id",
-        related_name="myapp_diaries",
+        db_column="author_id",
+        related_name="myapp_entries",
     )
 
-    person = models.ForeignKey(
-        Person,
-        on_delete=models.SET_NULL,
-        null=True,
-        blank=True,
-        db_column="person_id",
-        related_name="myapp_diaries",
-    )
+    # ❌ myapp_myapp には person_id 列が無いので person FK は持たない
+    # person = models.ForeignKey(...)
 
     def __str__(self):
         return self.title
 
 
 class MyMail(models.Model):
+    """
+    Supabase: myapp_mymail テーブル（あなたのDBに存在）
+    """
     class Meta:
         db_table = "myapp_mymail"
         managed = False
