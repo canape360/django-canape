@@ -1,10 +1,10 @@
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth import login
 from django.contrib import messages
-
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect, get_object_or_404
 from django.views.generic import TemplateView
+from django.utils import timezone  # ★追加（created_at用）
 
 from .models import MyApp, Person, MyMail
 from .forms import MyAppForm, MyMailForm, MyMailSearchForm
@@ -17,6 +17,8 @@ def user_dashboard(request):
 
 class AboutView(TemplateView):
     template_name = "about.html"
+
+
 # =========================
 # Person
 # =========================
@@ -31,12 +33,14 @@ def person_detail(request, pk):
     person = get_object_or_404(Person, pk=pk)
     return render(request, "myapp/person_detail.html", {"person": person})
 
+
 # =========================
 # MyApp（CRUD）
 # =========================
 @login_required
 def myappListView(request):
-    objects = MyApp.objects.all().order_by("-id")
+    # 大量データでも重くなりにくいように上限（必要なら数値変更）
+    objects = MyApp.objects.all().order_by("-id")[:500]
     return render(request, "myapp/myapp_list.html", {"object_list": objects})
 
 
@@ -61,13 +65,17 @@ def myappCreateView(request):
         if form.is_valid():
             obj = form.save(commit=False)
             obj.user = request.user  # ✅ user に統一
+
+            # ★重要：DBがNOT NULLでも落ちないように必ず埋める
+            if not getattr(obj, "created_at", None):
+                obj.created_at = timezone.now()
+
             obj.save()
+            messages.success(request, "日記を保存しました")
             return redirect("myapp:detail", pk=obj.pk)
 
-        # ✅ バリデーションエラーがある場合は、そのままエラー付きで返す
         return render(request, "myapp/myapp_form.html", {"form": form})
 
-    # GET
     form = MyAppForm()
     return render(request, "myapp/myapp_form.html", {"form": form})
 
@@ -76,18 +84,27 @@ def myappCreateView(request):
 def myappUpdateView(request, pk):
     obj = get_object_or_404(MyApp, pk=pk)
 
+    # （任意）自分の投稿だけ編集可能にしたい場合はコメント解除
+    # if obj.user_id and obj.user_id != request.user.id:
+    #     messages.error(request, "この日記を編集する権限がありません")
+    #     return redirect("myapp:detail", pk=obj.pk)
+
     if request.method == "POST":
         form = MyAppForm(request.POST, instance=obj)
         if form.is_valid():
             updated = form.save(commit=False)
-            updated.user = request.user  # ✅ user に統一
+            updated.user = request.user
+
+            # ★重要：古いNULLデータを編集しても落ちない
+            if not getattr(updated, "created_at", None):
+                updated.created_at = timezone.now()
+
             updated.save()
+            messages.success(request, "日記を更新しました")
             return redirect("myapp:detail", pk=updated.pk)
 
-        # ✅ エラー付きで返す
         return render(request, "myapp/myapp_update.html", {"form": form, "object": obj})
 
-    # GET
     form = MyAppForm(instance=obj)
     return render(request, "myapp/myapp_update.html", {"form": form, "object": obj})
 
@@ -95,8 +112,15 @@ def myappUpdateView(request, pk):
 @login_required
 def myappDeleteView(request, pk):
     obj = get_object_or_404(MyApp, pk=pk)
+
+    # （任意）自分の投稿だけ削除可能にしたい場合はコメント解除
+    # if obj.user_id and obj.user_id != request.user.id:
+    #     messages.error(request, "この日記を削除する権限がありません")
+    #     return redirect("myapp:detail", pk=obj.pk)
+
     if request.method == "POST":
         obj.delete()
+        messages.success(request, "日記を削除しました")
         return redirect("myapp:list")
     return render(request, "myapp/delete_template.html", {"object": obj})
 
@@ -113,7 +137,6 @@ def mymailCreateView(request):
             messages.success(request, "メールを送信しました")
             return redirect("myapp:mymail_list")
 
-        # ✅ エラー付きで返す
         return render(request, "myapp/mymail-form.html", {"form": form})
 
     form = MyMailForm()
@@ -123,7 +146,7 @@ def mymailCreateView(request):
 @login_required
 def mymail_list(request):
     search_form = MyMailSearchForm(request.GET)
-    objects = MyMail.objects.all().order_by("-id")
+    objects = MyMail.objects.all().order_by("-id")[:500]
 
     if search_form.is_valid():
         search = search_form.cleaned_data.get("search")
@@ -146,13 +169,13 @@ def signup_view(request):
         if form.is_valid():
             user = form.save()
             login(request, user)
+            messages.success(request, "登録が完了しました")
             return redirect("myapp:person_list")
-        # ✅ エラー付きで返す
+
         return render(request, "registration/signup.html", {"form": form})
 
     form = UserCreationForm()
     return render(request, "registration/signup.html", {"form": form})
-
 
 
 def top(request):
