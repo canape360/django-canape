@@ -33,7 +33,9 @@ ALLOWED_HOSTS = [
     "127.0.0.1",
     "localhost",
 ]
-
+CSRF_TRUSTED_ORIGINS = [
+    "https://django-canape-s664.onrender.com",
+]
 # Render でカスタムドメインを使うならここに追加
 
 # ========================

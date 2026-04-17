@@ -1,11 +1,15 @@
+import os
 from django.db import models
 from django.conf import settings
 from django.utils import timezone
 
+# 本番(Render/Supabase)では USE_SUPABASE=1 を設定
+USE_SUPABASE = os.getenv("USE_SUPABASE", "").lower() in ("1", "true", "yes")
+
 
 class Person(models.Model):
     """
-    Supabase: person テーブル
+    Supabase/SQLite: person テーブル
     """
     class Meta:
         db_table = "person"
@@ -23,13 +27,8 @@ class Person(models.Model):
 
 class MyApp(models.Model):
     """
-    Supabase: myapp_myapp テーブル
-    columns:
-      - id (bigint)
-      - title (varchar)
-      - content (varchar)  ← 本文
-      - author_id (int)    ← ユーザー
-      - created_at (timestamptz)
+    ローカル(SQLite): myapp_myapp(title, body, created_at, person_id, user_id)
+    Supabase(Postgres): myapp_myapp(title, content, created_at, author_id)
     """
     class Meta:
         db_table = "myapp_myapp"
@@ -37,25 +36,24 @@ class MyApp(models.Model):
 
     title = models.CharField(max_length=100)
 
-    # ✅ DB列は content(varchar) なので db_column="content"
-    # 文字数制限があるはずなので CharField が安全
-    # ※必要なら max_length を増やしてください（DB側の制限に合わせる）
-    body = models.CharField(db_column="content", max_length=2000)
+    # 本文: Supabaseは content / ローカルは body
+    body = models.TextField(db_column="content" if USE_SUPABASE else "body")
 
     created_at = models.DateTimeField(db_column="created_at", default=timezone.now)
 
-    # ✅ DB列は author_id（user_id ではない）
+    # ユーザー: Supabaseは author_id / ローカルは user_id
     user = models.ForeignKey(
         settings.AUTH_USER_MODEL,
         on_delete=models.SET_NULL,
         null=True,
         blank=True,
-        db_column="author_id",
+        db_column="author_id" if USE_SUPABASE else "user_id",
         related_name="myapp_entries",
     )
 
-    # ❌ myapp_myapp には person_id 列が無いので person FK は持たない
-    # person = models.ForeignKey(...)
+    # person_id はローカルSQLiteにある（Supabaseに無い想定なら、Supabaseでは使わない）
+    if not USE_SUPABASE:
+        person_id = models.BigIntegerField(db_column="person_id", null=True, blank=True)
 
     def __str__(self):
         return self.title
@@ -63,7 +61,7 @@ class MyApp(models.Model):
 
 class MyMail(models.Model):
     """
-    Supabase: myapp_mymail テーブル（あなたのDBに存在）
+    Supabase/SQLite: myapp_mymail テーブル
     """
     class Meta:
         db_table = "myapp_mymail"
