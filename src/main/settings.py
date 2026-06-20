@@ -103,22 +103,16 @@ WSGI_APPLICATION = "main.wsgi.application"
 # Render は DATABASE_URL（Postgres）を設定するのが基本
 # ローカルで未設定なら sqlite を使う
 # ========================
-DATABASE_URL = os.environ.get("DATABASE_URL")
-
-if DATABASE_URL:
-    DATABASES = {
-        "default": dj_database_url.config(
-            default=DATABASE_URL,
-            conn_max_age=600,
-            ssl_require=True,  # Render Postgres想定
-        )
+# ========================
+# Database
+# 一旦 SQLite 固定で動作確認
+# ========================
+DATABASES = {
+    "default": {
+        "ENGINE": "django.db.backends.sqlite3",
+        "NAME": BASE_DIR / "db.sqlite3",
     }
-else:
-    DATABASES = {
-        "default": dj_database_url.config(
-            default=f"sqlite:///{BASE_DIR / 'db.sqlite3'}"
-        )
-    }
+}
 
 # ========================
 # Password validation
