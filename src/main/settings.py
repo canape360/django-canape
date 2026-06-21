@@ -29,12 +29,12 @@ DEBUG = os.environ.get("DEBUG", "False").lower() == "true"
 # 本番は * を避ける（セキュリティ）
 # ========================
 ALLOWED_HOSTS = [
-    "django-canape-s664.onrender.com",
+    "django-canape-gsu2.onrender.com",
     "127.0.0.1",
     "localhost",
 ]
 CSRF_TRUSTED_ORIGINS = [
-    "https://django-canape-s664.onrender.com",
+    "https://django-canape-gsu2.onrender.com",
 ]
 # Render でカスタムドメインを使うならここに追加
 
@@ -105,13 +105,15 @@ WSGI_APPLICATION = "main.wsgi.application"
 # ========================
 # ========================
 # Database
-# 一旦 SQLite 固定で動作確認
+# Render では DATABASE_URL（Supabase）を使用
+# ローカルで未設定なら sqlite を使う
 # ========================
 DATABASES = {
-    "default": {
-        "ENGINE": "django.db.backends.sqlite3",
-        "NAME": BASE_DIR / "db.sqlite3",
-    }
+    "default": dj_database_url.config(
+        default=f"sqlite:///{BASE_DIR / 'db.sqlite3'}",
+        conn_max_age=600,
+        ssl_require=True,
+    )
 }
 
 # ========================
