@@ -5,16 +5,16 @@ def add_phone_column(apps, schema_editor):
 
     if vendor == "sqlite":
         columns = [c.name for c in schema_editor.connection.introspection.get_table_description(
-            schema_editor.connection.cursor(), "myapp_person"
+            schema_editor.connection.cursor(), "person"
         )]
         if "phone" not in columns:
-            schema_editor.execute("ALTER TABLE myapp_person ADD COLUMN phone varchar(255);")
+            schema_editor.execute("ALTER TABLE person ADD COLUMN phone varchar(255);")
 
     elif vendor == "postgresql":
-        schema_editor.execute("ALTER TABLE myapp_person ADD COLUMN IF NOT EXISTS phone varchar(255);")
+        schema_editor.execute("ALTER TABLE person ADD COLUMN IF NOT EXISTS phone varchar(255);")
 
     else:
-        schema_editor.execute("ALTER TABLE myapp_person ADD COLUMN phone varchar(255);")
+        schema_editor.execute("ALTER TABLE person ADD COLUMN phone varchar(255);")
 
 class Migration(migrations.Migration):
     dependencies = [

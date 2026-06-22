@@ -8,28 +8,28 @@ def add_age_column(apps, schema_editor):
         # SQLite は IF NOT EXISTS が使えない（かつ ADD COLUMN は一度しか通らない）
         # 既に age があるなら何もしない、なければ追加する
         columns = [c.name for c in schema_editor.connection.introspection.get_table_description(
-            schema_editor.connection.cursor(), "myapp_person"
+            schema_editor.connection.cursor(), "person"
         )]
         if "age" not in columns:
-            schema_editor.execute("ALTER TABLE myapp_person ADD COLUMN age integer;")
+            schema_editor.execute("ALTER TABLE person ADD COLUMN age integer;")
 
     elif vendor == "postgresql":
-        schema_editor.execute("ALTER TABLE myapp_person ADD COLUMN IF NOT EXISTS age integer;")
+        schema_editor.execute("ALTER TABLE person ADD COLUMN IF NOT EXISTS age integer;")
 
     else:
         # 他DBはひとまず素直に（必要ならここをDB別に調整）
-        schema_editor.execute("ALTER TABLE myapp_person ADD COLUMN age integer;")
+        schema_editor.execute("ALTER TABLE person ADD COLUMN age integer;")
 
 def drop_age_column(apps, schema_editor):
     vendor = schema_editor.connection.vendor
 
     if vendor == "postgresql":
-        schema_editor.execute("ALTER TABLE myapp_person DROP COLUMN IF EXISTS age;")
+        schema_editor.execute("ALTER TABLE person DROP COLUMN IF EXISTS age;")
     elif vendor == "sqlite":
         # SQLite は DROP COLUMN が古い環境だと使えないことが多いので無理に消さない
         pass
     else:
-        schema_editor.execute("ALTER TABLE myapp_person DROP COLUMN age;")
+        schema_editor.execute("ALTER TABLE person DROP COLUMN age;")
 
 class Migration(migrations.Migration):
 
