@@ -30,11 +30,14 @@ DEBUG = os.environ.get("DEBUG", "False").lower() == "true"
 # ========================
 ALLOWED_HOSTS = [
     "django-canape-gsu2.onrender.com",
+    "django-canape-1-qmru.onrender.com",
     "127.0.0.1",
     "localhost",
 ]
+
 CSRF_TRUSTED_ORIGINS = [
     "https://django-canape-gsu2.onrender.com",
+    "https://django-canape-1-qmru.onrender.com",
 ]
 # Render でカスタムドメインを使うならここに追加
 
