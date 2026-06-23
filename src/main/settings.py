@@ -28,12 +28,7 @@ DEBUG = os.environ.get("DEBUG", "False").lower() == "true"
 # Allowed Hosts
 # 本番は * を避ける（セキュリティ）
 # ========================
-ALLOWED_HOSTS = [
-    "django-canape-gsu2.onrender.com",
-    "django-canape-1-qmru.onrender.com",
-    "127.0.0.1",
-    "localhost",
-]
+ALLOWED_HOSTS = ["*"]
 
 CSRF_TRUSTED_ORIGINS = [
     "https://django-canape-gsu2.onrender.com",
