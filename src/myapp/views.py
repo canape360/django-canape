@@ -183,4 +183,4 @@ def top(request):
         "title": "ようこそ",
         "message": "これは一般ユーザー向けの画面です。",
     }
-    return render(request, "myapp/top.html", context)
+    return render(request, "myapp/index.html", context)
