@@ -1,0 +1,77 @@
+{% extends "myapp/base.html" %}
+
+{% block title %}Home | myapp{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+
+  <h1>Home</h1>
+
+  <main>
+    <section class="mb-4">
+      <h3>初心者向けにこのアプリの作り方を説明します</h3>
+      <p>Daigo のアプリケーション手順から始めましょう。</p>
+    </section>
+
+    <section class="mb-4">
+      <h4>Django プロジェクト作成手順</h4>
+
+      <p class="p1">1. cd ~/projects/django-canape/src（今回は /Users/user1/projects/django-canape/srcに存在する）</p>
+      <p class="p1">2. django-admin startproject プロジェクト名</p>
+      <p class="p1">3. cd プロジェクト名</p>
+      <p class="p1">4. python3 manage.py runserver(ここではpython3 manage.py runserver 8001で起動)</p>
+
+      <p>
+        コマンドを実行すると、Django 標準の admin 画面が作成されます。
+      </p>
+
+      <p class="p1">
+        同じ名前の設定用フォルダと、管理用の manage.py が自動生成されます。
+      </p>
+
+      <p class="p1">
+        設定フォルダ内の <strong>settings.py</strong> と
+        <strong>urls.py</strong> は最重要ファイルです。
+      </p>
+
+      <a
+        href="https://canape2020.stars.ne.jp/python/django-src.html#12-3"
+        target="_blank"
+        rel="noopener"
+      >
+        ▶ プロジェクト作成の詳しい解説
+      </a>
+    </section>
+
+    <section class="mb-4">
+      <h4>アプリケーション作成</h4>
+
+      <p class="p1">
+        python3 manage.py <mark>startapp</mark> myapp
+      </p>
+
+      <p class="p1">
+        settings.py の INSTALLED_APPS に <code>'myapp'</code> を追加します。
+      </p>
+
+      <p class="p1">
+        templates / static フォルダを作成し、HTML・CSS を管理します。
+      </p>
+
+      <p class="p1">
+        views.py で View を定義し、urls.py で URL と紐づけます。
+      </p>
+
+      <p class="p1">
+        プロジェクト側 urls.py で <code>include()</code> を使い、
+        アプリの URL を読み込みます。
+      </p>
+    </section>
+    <section>
+      <h2>Contact</h2>
+      <p>Contact us at contact@example.com</p>
+    </section>
+  </main>
+
+</div>
+{% endblock %}

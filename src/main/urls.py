@@ -8,7 +8,8 @@ urlpatterns = [
     path("admin/", admin.site.urls),
 
     # トップ / About（サイト全体のトップ）
-    path("", TemplateView.as_view(template_name="index.html"), name="index"),
+    path("", myapp_views.top, name="index"),
+    # path("", TemplateView.as_view(template_name="index.html"), name="index"),
     path("about/", TemplateView.as_view(template_name="about.html"), name="about"),
 
     # サインアップ
