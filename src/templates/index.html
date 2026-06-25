@@ -1,26 +1,41 @@
 {% extends "base.html" %}
-{% block title %}Django Canape プロジェクト{% endblock %}
+
+{% block title %}一般ユーザー向けトップ{% endblock %}
 
 {% block content %}
-<h1>Django Canape プロジェクト</h1>
-<p>Django Canape の開発・管理・Git運用手順をまとめた HTML版 README です。</p>
+<h1>一般ユーザー向けトップ</h1>
+<div class="mt-4">
+  <h2 class="h5">日記アプリ</h2>
 
-<section>
-  <h2>1. 環境セットアップ</h2>
+  <p class="text-muted">
+    日々の出来事を記録できます。
+  </p>
 
-  <h3>プロジェクトディレクトリに移動</h3>
-  <pre><code>cd ~/projects/django-canape</code></pre>
+  <a href="/diary/" class="btn btn-success">
+    日記アプリを開く
+  </a>
+</div>
 
-  <h3>仮想環境の起動</h3>
-  <pre><code>source myenv/bin/activate</code></pre>
 
-  <h3>必要なパッケージをインストール</h3>
-  <pre><code>pip install -r requirements.txt</code></pre>
+<p>
+  ここは <strong>/myapp/top/</strong> に対応した一般ユーザー向け画面です。
+</p>
+<div class="mt-4">
+  {% if user.is_authenticated %}
+    <div class="alert alert-success">
+      ログイン中（{{ user.username }}）
+    </div>
+  {% else %}
+    <div class="alert alert-warning">
+      利用するにはログインしてください。
+    </div>
 
-  <h3>src ディレクトリへ移動</h3>
-  <pre><code>cd src</code></pre>
-</section>
-
+    <div class="d-flex gap-2">
+      <a class="btn btn-primary" href="{% url 'login' %}">ログイン</a>
+      <a class="btn btn-outline-primary" href="{% url 'signup' %}">新規登録</a>
+    </div>
+  {% endif %}
+</div>
 <section>
   <h2>2. 開発用サーバー起動</h2>
   <pre><code>python3 manage.py runserver 8001</code></pre>
@@ -29,9 +44,18 @@
 <section>
   <h2>6. 便利リンク（開発サーバー起動中）</h2>
   <ul>
-    <!-- ✅ 8000固定をやめて相対パスにする（8001でも動く） -->
     <li><a href="https://django-canape-gsu2.onrender.com/">新日記サイト</a></li>
     <li><a href="https://django-canape-gsu2.onrender.com/admin/login/?next=/admin/">管理画面</a></li>
   </ul>
 </section>
+
+<div class="alert alert-info">
+  ログイン状態：
+  {% if user.is_authenticated %}
+    ログイン中（{{ user.username }}）
+  {% else %}
+    未ログイン
+  {% endif %}
+</div>
+
 {% endblock %}

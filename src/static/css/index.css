@@ -37,7 +37,7 @@ main {
 main h1, main h2, main h3 { color: #2c3e50; }
 main pre { background: #eee; padding: 10px; border-radius: 5px; overflow-x: auto; }
 main code { font-family: Consolas, monospace; }
-main a { color: #2980b9; text-decoration: none; }
+main a:not(nav a) { color: #2980b9; text-decoration: none; }
 main a:hover { text-decoration: underline; }
 main section { margin-bottom: 40px; }
 
