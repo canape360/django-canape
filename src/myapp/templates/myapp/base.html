@@ -2,7 +2,6 @@
 {% load static %}
 <!doctype html>
 <html lang="ja">
-{% load static %}
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -10,40 +9,32 @@
 
   <link rel="icon" href="{% static 'cat.ico' %}">
   <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP&display=swap" rel="stylesheet">
-
-  <!-- CSSは head の中に1回だけ -->
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet">
   <link rel="stylesheet" href="{% static 'css/index.css' %}">
 </head>
 
 <body>
 <header>
-  <!-- ✅ Bootstrapで色・余白・リンク色を統一 -->
   <nav class="navbar navbar-dark bg-primary px-3">
-    <a class="navbar-brand text-white text-decoration-none me-2" href="/">Home</a>
-
-    <a class="text-white text-decoration-none me-2" href="{% url 'myapp:list' %}">list</a>
-    <a class="text-white text-decoration-none me-2" href="{% url 'diaryapp:list' %}">日記</a>
-    <a class="text-white text-decoration-none me-2" href="{% url 'myapp:detail_latest' %}">最新の詳細</a>
-    <a class="text-white text-decoration-none me-2" href="{% url 'myapp:form' %}">新規投稿</a>
-    <a class="text-white text-decoration-none me-2" href="{% url 'myapp:mymail' %}">コンタクト</a>
-    <a class="text-white text-decoration-none me-2" href="{% url 'myapp:person_list' %}">人物情報</a>
+    <a class="navbar-brand text-white text-decoration-none me-3" href="/">Home</a>
+    <a class="text-white text-decoration-none me-3" href="{% url 'diaryapp:list' %}">日記一覧</a>
+    <a class="text-white text-decoration-none me-3" href="{% url 'diaryapp:create' %}">新規投稿</a>
+    <a class="text-white text-decoration-none me-3" href="{% url 'diaryapp:public_list' %}">公開日記</a>
+    <a class="text-white text-decoration-none me-3" href="{% url 'myapp:mymail' %}">コンタクト</a>
 
     <div class="ms-auto d-flex align-items-center gap-2">
       {% if user.is_authenticated %}
         <span class="text-white">こんにちは {{ user.username }}</span>
-
         {% if user.is_staff %}
-          <a class="text-white text-decoration-none" href="/admin/">管理サイト</a>
+          <a class="text-white text-decoration-none me-2" href="/admin/">管理サイト</a>
         {% endif %}
-
-        <!-- ✅ inline style をやめて Bootstrap ボタンに -->
         <form action="{% url 'logout' %}" method="post" class="m-0">
           {% csrf_token %}
           <button type="submit" class="btn btn-light btn-sm">ログアウト</button>
         </form>
       {% else %}
-        <a class="text-white text-decoration-none" href="{% url 'login' %}">ログイン</a>
+        <a class="text-white text-decoration-none me-2" href="{% url 'login' %}">ログイン</a>
+        <a class="text-white text-decoration-none" href="{% url 'signup' %}">新規登録</a>
       {% endif %}
     </div>
   </nav>
@@ -54,7 +45,7 @@
 </main>
 
 <footer class="bg-primary text-white text-center py-3">
-  <small>&copy; 2026 My Django App</small>
+  <small>&copy; 2026 Django Canape</small>
 </footer>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"></script>

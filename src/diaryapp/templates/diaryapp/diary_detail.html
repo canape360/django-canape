@@ -1,15 +1,22 @@
 <!-- diaryapp/templates/diaryapp/diary_detail.html -->
- {% extends "myapp/base.html" %}
+{% extends "myapp/base.html" %}
+{% block title %}{{ object.title }}{% endblock %}
+
 {% block content %}
-<h1>{{ object.title }}</h1>
+<div class="card shadow-sm">
+  <div class="card-body">
+    <h1 class="card-title">{{ object.title }}</h1>
+    <p class="text-muted">
+      作成者: {{ object.user }} | 投稿日: {{ object.created_at|date:"Y/m/d H:i" }}
+    </p>
+    <hr>
+    <div style="white-space: pre-wrap;">{{ object.content }}</div>
+  </div>
+</div>
 
-<p>{{ object.created_at|date:"Y-m-d H:i" }}</p>
-<div style="white-space: pre-wrap;">{{ object.content }}</div>
-
-<hr>
-<p>
-  <a href="{% url 'diaryapp:update' object.pk %}">編集</a> |
-  <a href="{% url 'diaryapp:delete' object.pk %}">削除</a> |
-  <a href="{% url 'diaryapp:list' %}">一覧へ</a>
-</p>
+<div class="mt-3 d-flex gap-2">
+  <a href="{% url 'diaryapp:list' %}" class="btn btn-secondary">一覧に戻る</a>
+  <a href="{% url 'diaryapp:update' object.pk %}" class="btn btn-warning">編集</a>
+  <a href="{% url 'diaryapp:delete' object.pk %}" class="btn btn-danger">削除</a>
+</div>
 {% endblock %}
