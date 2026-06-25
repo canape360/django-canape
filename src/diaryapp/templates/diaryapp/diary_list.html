@@ -1,20 +1,25 @@
 <!-- diaryapp/templates/diaryapp/diary_list.html -->
- {% extends "myapp/base.html" %}
-{% block content %}
-<h1>日記一覧</h1>
+{% extends "myapp/base.html" %}
+{% block title %}日記一覧{% endblock %}
 
-<p><a href="{% url 'diaryapp:create' %}">＋ 新規作成</a></p>
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-3">
+  <h1>日記一覧</h1>
+  <a href="{% url 'diaryapp:create' %}" class="btn btn-primary">＋ 新規作成</a>
+</div>
 
 {% if diaries %}
-  <ul>
-    {% for d in diaries %}
-      <li>
-        <a href="{% url 'diaryapp:detail' d.pk %}">{{ d.title }}</a>
-        （{{ d.created_at|date:"Y-m-d H:i" }}）
-      </li>
-    {% endfor %}
-  </ul>
+  {% for d in diaries %}
+    <div class="card shadow-sm mb-3">
+      <div class="card-body">
+        <h5 class="card-title">
+          <a href="{% url 'diaryapp:detail' d.pk %}" class="text-decoration-none">{{ d.title }}</a>
+        </h5>
+        <p class="text-muted mb-0">{{ d.created_at|date:"Y/m/d H:i" }}</p>
+      </div>
+    </div>
+  {% endfor %}
 {% else %}
-  <p>まだ日記がありません。</p>
+  <p class="text-muted">まだ日記がありません。</p>
 {% endif %}
 {% endblock %}
