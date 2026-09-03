@@ -8,7 +8,8 @@ from dotenv import load_dotenv
 # .env を読み込む（ローカル向け）
 # Render では Environment が優先されるので安全
 # ========================
-load_dotenv()
+
+load_dotenv(Path(__file__).resolve().parents[2] / ".env")
 
 # ========================
 # BASE_DIR
