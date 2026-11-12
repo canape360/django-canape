@@ -8,7 +8,6 @@ from dotenv import load_dotenv
 # .env を読み込む（ローカル向け）
 # Render では Environment が優先されるので安全
 # ========================
-
 load_dotenv(Path(__file__).resolve().parents[2] / ".env")
 
 # ========================
@@ -20,6 +19,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent  # => .../repo/src
 # ========================
 # Secret & Debug
 # ========================
+# 本番(Render)では必ず Environment に SECRET_KEY を設定すること
 SECRET_KEY = os.environ.get("SECRET_KEY", "fallback-secret-key")
 
 # Render/ローカル共通で DEBUG を見れるように統一（DEBUG=True/False）
@@ -27,7 +27,7 @@ DEBUG = os.environ.get("DEBUG", "False").lower() == "true"
 
 # ========================
 # Allowed Hosts
-# 本番は * を避ける（セキュリティ）
+# 本番は * を避けるのが望ましい（後で絞ることを推奨）
 # ========================
 ALLOWED_HOSTS = ["*"]
 
@@ -38,7 +38,7 @@ CSRF_TRUSTED_ORIGINS = [
 # Render でカスタムドメインを使うならここに追加
 
 # ========================
-# Login URLs（重複定義を排除）
+# Login URLs
 # ========================
 LOGIN_URL = "/accounts/login/"
 LOGIN_REDIRECT_URL = "/diary/"
@@ -54,10 +54,17 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
+    "django.contrib.sites",  # allauth 用
 
     # AppConfig を明示指定（ready() を有効化）
     "myapp.apps.MyappConfig",
     "diaryapp",
+
+    # allauth / GitHub ログイン
+    "allauth",
+    "allauth.account",
+    "allauth.socialaccount",
+    "allauth.socialaccount.providers.github",
 ]
 
 # ========================
@@ -71,6 +78,7 @@ MIDDLEWARE = [
     "django.middleware.csrf.CsrfViewMiddleware",
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
+    "allauth.account.middleware.AccountMiddleware",  # allauth 用
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
 ]
 
@@ -97,11 +105,6 @@ TEMPLATES = [
 
 WSGI_APPLICATION = "main.wsgi.application"
 
-# ========================
-# Database
-# Render は DATABASE_URL（Postgres）を設定するのが基本
-# ローカルで未設定なら sqlite を使う
-# ========================
 # ========================
 # Database
 # Render では DATABASE_URL（Supabase）を使用
@@ -168,6 +171,30 @@ MEDIA_ROOT = BASE_DIR / "media"
 # Default primary key
 # ========================
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
+
+# ========================
+# allauth / GitHub ログイン
+# ========================
+SITE_ID = 1
+
+AUTHENTICATION_BACKENDS = [
+    "django.contrib.auth.backends.ModelBackend",
+    "allauth.account.auth_backends.AuthenticationBackend",
+]
+
+SOCIALACCOUNT_PROVIDERS = {
+    "github": {
+        "APP": {
+            "client_id": os.environ.get("GITHUB_CLIENT_ID", ""),
+            "secret": os.environ.get("GITHUB_CLIENT_SECRET", ""),
+        },
+        "SCOPE": ["user:email"],
+    }
+}
+
+# Render はプロキシ経由なので https を正しく認識させる
+SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
+ACCOUNT_DEFAULT_HTTP_PROTOCOL = "http" if DEBUG else "https"
 
 # ========================
 # Logging（Render logs に 500 の原因を出しやすくする）

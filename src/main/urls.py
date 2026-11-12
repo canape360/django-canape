@@ -9,7 +9,6 @@ urlpatterns = [
 
     # トップ / About（サイト全体のトップ）
     path("", myapp_views.top, name="index"),
-    # path("", TemplateView.as_view(template_name="index.html"), name="index"),
     path("about/", TemplateView.as_view(template_name="about.html"), name="about"),
 
     # サインアップ
@@ -17,6 +16,9 @@ urlpatterns = [
 
     # Django標準 認証（login / logout / password）
     path("accounts/", include("django.contrib.auth.urls")),
+
+    # GitHubログイン（allauth）※必ず上の標準認証より後ろに置く
+    path("accounts/", include("allauth.urls")),
 
     # diaryapp
     path("diary/", include("diaryapp.urls")),
